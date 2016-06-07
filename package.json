@@ -2,10 +2,16 @@
   "name": "timeline",
   "version": "1.0.0",
   "description": "Build and edit history",
-  "main": "server.js",
+  "main": "server/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "michael alvarino <michael.alvarino@gmail.com> (http://imbadatcleverurls.blogspot.com/)",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.15.1",
+    "express": "^4.13.4",
+    "morgan": "^1.7.0",
+    "pg": "^4.5.6"
+  }
 }
