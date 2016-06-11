@@ -50,6 +50,9 @@ updated_date		timestamp
 );*/
 
 // test using curl...  curl -H "Content-Type: application/json" -X POST -d '{"username":"xyz","password":"xyz"}' http://localhost:8000/api/AddEvent
+//TODO check if email already exists
+//TODO validate inputs
+//TODO does encryption happen here or at the front end? probably here...
 app.post('/api/user/create', (req,res) => {
 	console.log(req.body);
 	console.log(connectionString);
