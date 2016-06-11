@@ -1,8 +1,21 @@
+-- =========================================
+-- create roles
+-- =========================================
+create role timeline with login password 'temp';
 
+-- =========================================
+-- create database
+-- =========================================
 create database timeline;
 
-use timeline;
+-- =========================================
+-- use that database
+-- =========================================
+\c timeline
 
+-- =========================================
+-- create tables
+-- =========================================
 create table users(
 id 					serial, -- autoincrementing, 4 byte, unsigned integer
 email 				varchar(255),
@@ -64,4 +77,22 @@ id					serial,
 tag_id				integer,
 timeline_item_id	integer
 );
+
+-- =========================================
+-- grant privileges to role
+-- =========================================
+grant all privileges on tag_items to timeline;
+grant all privileges on tag_items_id_seq to timeline;
+grant all privileges on tags to timeline;
+grant all privileges on tags_id_seq to timeline;
+grant all privileges on timeline_item_logs to timeline;
+grant all privileges on timeline_item_logs_id_seq to timeline;
+grant all privileges on timeline_items to timeline;
+grant all privileges on timeline_items_id_seq to timeline;
+grant all privileges on timelines to timeline;
+grant all privileges on timelines_id_seq to timeline;
+grant all privileges on tracking_actions to timeline;
+grant all privileges on tracking_actions_id_seq to timeline;
+grant all privileges on users to timeline;
+grant all privileges on users_id_seq to timeline;
 

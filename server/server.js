@@ -11,8 +11,9 @@ const pg =			require('pg');
 // =============================================
 // connect to the db
 // =============================================
-const connectionString = "postgres://postgres:" + process.env.POSTGRES_PASSWORD + "@localhost/timeline";
-console.log("Postgres password: " + process.env.POSTGRES_PASSWORD);
+const dbpass = process.env.dbpassword;
+const connectionString = "postgres://timeline:" + dbpass + "@localhost/timeline";
+console.log("Postgres password: " + dbpass);
 
 // =============================================
 // create the app
@@ -51,6 +52,7 @@ updated_date		timestamp
 // test using curl...  curl -H "Content-Type: application/json" -X POST -d '{"username":"xyz","password":"xyz"}' http://localhost:8000/api/AddEvent
 app.post('/api/user/create', (req,res) => {
 	console.log(req.body);
+	console.log(connectionString);
 	var now = new Date();
 	var data = {
 		email: req.body.email, 
@@ -59,13 +61,14 @@ app.post('/api/user/create', (req,res) => {
 		created_date: now.toISOString(),
 		updated_date: now.toISOString()
 	};
+	
 	pg.connect(connectionString, (err, client, done) => {
 		if(err){
 			done();
 			console.log(err);
 			return res.status(500).json({success: false, data: err});
 		}
-		client.query("insert into users(email, password_digest, user_type, created_date, updated_date) values($1, $2, $3, $4, $5)", [data.email, data.password_digest, data.user_type, data.created_date, data.updated_date]);
+		client.query("insert into users (email, password_digest, user_type, created_date, updated_date) values($1, $2, $3, $4, $5);", [data.email, data.password_digest, data.user_type, data.created_date, data.updated_date]);
 	})
 
 
