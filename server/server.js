@@ -8,7 +8,7 @@ const path = 		require('path');
 const morgan = 		require('morgan');
 const bodyParser =  require('body-parser');
 const pg =			require('pg');
-const config = require('../config.json');
+const config =      require('../config.json');
 
 // =============================================
 // connect to the db
