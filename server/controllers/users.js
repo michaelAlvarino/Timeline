@@ -6,17 +6,47 @@ module.exports = function (app, pg, connectionString) {
 
 	app.get('/api/users/:id(\\d+)', (req, res) => {
 		var id = req.params.id;
-		User.find(id, (user) => {
-			res.json(user);
-		});
+		var user = User.query().findById(id);
+		user.then(
+			(data) => { 
+				if(data){
+					res.json(data);
+				}
+				else{
+					res.json('user not found');
+				}
+			},
+			(error) => { 
+				res.status(500);
+				res.json(error); 
+			}
+		);
 	});
 
-	// test using curl...  curl -H "Content-Type: application/json" -X POST -d '{"username":"xyz","password":"xyz"}' http://localhost:8000/api/AddEvent
 	app.post('/api/users/create', (req,res) => {
-		console.log(req.body);
-		var user = new User(req.body.user); 
+		// hash passwords
+		var validatedUser = User.validateUser(req.body);
+		if(validatedUser === false){
+			res.json('user creation failed validation'); // change to specify validation failure
+		}
+		User.query()
+		.insertAndFetch(validatedUser)
+		.then(
+			(data) => {
+				if(data){
+					res.json(data);
+				}
+				else{
+					res.json('user creation failed');
+				}
+			},
+			(error) => {
+				res.status(500);
+				res.json(error);
+			}
+		)
 
-		var _ = (user, res) => {
+/*		var _ = (user, res) => {
 			if (user.save()) {
 				res.json(user);
 			} else {
@@ -35,7 +65,7 @@ module.exports = function (app, pg, connectionString) {
 			}, 0);
 		};
 
-		saveUser(user);
+		saveUser(user);*/
 	});
 
 	app.delete('/api/users/:id(\\d+)', (req, res) => {

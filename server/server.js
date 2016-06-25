@@ -9,6 +9,10 @@ const morgan = 		require('morgan');
 const bodyParser =  require('body-parser');
 const pg =			require('pg');
 const config =      require('../config.json');
+const knexConfig = 	require('./knexfile.js');
+const objection =	require('objection');
+const knex =		require('knex');
+const model =		objection.Model;
 
 // =============================================
 // connect to the db
@@ -17,6 +21,8 @@ const dbPassword = config.dbPassword;
 const dbUsername = config.dbUsername;
 const connectionString = "postgres://" +  dbUsername + ":" + dbPassword + "@localhost/timeline";
 console.log("Postgres Username: " + dbUsername, "Postgres password: " + dbPassword);
+const _knex = knex(knexConfig.production);
+model.knex(_knex);
 
 // =============================================
 // create the app
