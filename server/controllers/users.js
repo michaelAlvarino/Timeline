@@ -31,6 +31,9 @@ module.exports = function (app, pg, connectionString) {
 		}
 		User.query()
 		.insertAndFetch(validatedUser)
+		/*
+			this generates an insert statement where the column names are the object keys and values are the associated values
+		*/
 		.then(
 			(data) => {
 				if(data){
@@ -45,27 +48,6 @@ module.exports = function (app, pg, connectionString) {
 				res.json(error);
 			}
 		)
-
-/*		var _ = (user, res) => {
-			if (user.save()) {
-				res.json(user);
-			} else {
-				res.json(user.errors);
-			}
-		}
-
-		var saveUser = (user) => {
-			setTimeout(() => {
-				if (user.uniqueEmail !== null) {
-					_(user, res);
-					return res;
-				} else {
-					saveUser(user);
-				}
-			}, 0);
-		};
-
-		saveUser(user);*/
 	});
 
 	app.delete('/api/users/:id(\\d+)', (req, res) => {

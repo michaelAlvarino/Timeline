@@ -17,14 +17,14 @@ class User extends model{
 		this.query()
 		.where('id','=',id)
 	}
-	static get jsonSchema () {
+	static get jsonSchema() {
 	    return {
 	      type: 'object',
-	      required: ['email'],
+	      required: ['email','passwordDigest'],
 
 	      properties: {
 	        id: {type: 'integer'},
-	        password: {type: 'string', minLength: 1, maxLength: 255},
+	        passwordDigest: {type: 'string', minLength: 1, maxLength: 255},
 	        email: {type: 'string', minLength: 5, maxLength: 255}
 	      }
 		};
