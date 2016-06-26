@@ -15,15 +15,20 @@ class User extends model {
 
 	static get jsonSchema() {
 		return {
-			type: 'object',
-			required: ['email','passwordDigest'],
+			type:		'object',
+			required:	['email','passwordDigest'],
 
 			properties: {
-				id: {type: 'integer'},
-				passwordDigest: {type: 'string', minLength: 1, maxLength: 255},
-				email: {type: 'string', minLength: 5, maxLength: 255},
-				createdDate: {type: 'string'},
-				updatedDate: {type: 'string'}
+				id:				{type: 'integer'},
+				passwordDigest:	{type: 'string', minLength: 1, maxLength: 255},
+				email: 			{
+					type:		'string', 
+					minLength:	5, 
+					maxLength:	255,
+					pattern:	'^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$'
+				},
+				createdDate:	{type: 'string', format: 'date-time'},
+				updatedDate:	{type: 'string', format: 'date-time'}
 			}
 		};
     }
@@ -72,12 +77,13 @@ var _getValidations = (userAttributes) => {
 
 	return {
 		'Password required':						!password,
-		'Passowrd must be greater than 8 chars':	password && password.length < 9,
+		'Password must be greater than 8 chars':	password && password.length < 9,
 		'Password requires 1 lower case letter':	password && password.search(/[a-z]/) === -1,
 		'Password requires 1 upper case letter':	password && password.search(/[A-Z]/) === -1,
 		'Password requires 1 number': 				password && password.search(/[0-9]/) === -1,
 		'Email required':							!email,
 		'Email is not valid':						email && email.search(emailRegex) === -1,
+		'Email already taken':						email && false, // TODO: Add uniqueness check
 		'User type not valid':						['user', 'moderator', 'admin', 'theRock'].indexOf(userType) < 0
 	};
 };
