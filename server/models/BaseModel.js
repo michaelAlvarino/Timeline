@@ -8,7 +8,7 @@ class BaseModel {
 	static getTable () {
 		return '';
 	}
-
+// some change
 	static find (id, callback) {
 		_pg.connect(_connectionString, (err, client, done) => {
 			if (err) {
