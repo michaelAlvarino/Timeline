@@ -24,30 +24,28 @@ module.exports = function (app, pg, connectionString) {
 	});
 
 	app.post('/api/users/create', (req,res) => {
-		// hash passwords
-		var validatedUser = User.validateUser(req.body);
-		if(validatedUser === false){
-			res.json('user creation failed validation'); // change to specify validation failure
-		}
-		User.query()
-		.insertAndFetch(validatedUser)
-		/*
-			this generates an insert statement where the column names are the object keys and values are the associated values
-		*/
-		.then(
-			(data) => {
-				if(data){
-					res.json(data);
-				}
-				else{
-					res.json('user creation failed');
-				}
-			},
-			(error) => {
-				res.status(500);
-				res.json(error);
-			}
-		)
+		User.validateUser(req.body) // Run custom validations and hash password
+			.then((validatedUser) => {
+				User.query()
+				.insertAndFetch(validatedUser)
+				/*
+					this generates an insert statement where the column names are the object keys and values are the associated values
+				*/
+				.then((data) => {
+					if(data){
+						res.json(data);
+					}
+					else{
+						res.json('user creation failed');
+					}
+				})
+				.catch((error) => {
+					res.status(500).json(error);
+				})
+			})
+			.catch((errors) => {
+				res.json(errors);
+			});
 	});
 
 	app.delete('/api/users/:id(\\d+)', (req, res) => {
