@@ -13,7 +13,7 @@ module.exports = function (app, pg, connectionString) {
 					res.json(data);
 				}
 				else{
-					res.json('user not found');
+					res.status(404).json('User not found');
 				}
 			},
 			(error) => { 

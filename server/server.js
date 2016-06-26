@@ -65,3 +65,4 @@ require('./controllers/users.js')(app, pg, connectionString);
 // =============================================
 app.listen(port);
 
+module.exports = app;
