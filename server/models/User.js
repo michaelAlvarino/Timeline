@@ -25,17 +25,20 @@ class User extends model{
 	      properties: {
 	        id: {type: 'integer'},
 	        passwordDigest: {type: 'string', minLength: 1, maxLength: 255},
-	        email: {type: 'string', minLength: 5, maxLength: 255}
+	        email: {type: 'string', minLength: 5, maxLength: 255},
+	        createdDate: {type: 'string'},
+	        updatedDate: {type: 'string'}
 	      }
 		};
     }
     static validateUser(userAttributes){
-    	if(!userAttributes.password || !userAttributes.email || userAttributes.email.search(emailRegex) === -1){// search takes the regex and returns the location or -1 on failure
+    	if(!userAttributes.password || !userAttributes.email || (userAttributes.email.search(emailRegex) === -1)){// search takes the regex and returns the location or -1 on failure
     		return false;
     	}
+    	var dt = new Date().toISOString();
     	userAttributes.passwordDigest = _createPasswordDigest(userAttributes.password);
-    	userAttributes.createdDate = (new Date()).toISOString();
-    	userAttributes.updatedDate = userAttributes.createdDate;
+    	userAttributes.createdDate = dt;
+    	userAttributes.updatedDate = dt;
     	delete userAttributes.password;
     	return userAttributes;
     }

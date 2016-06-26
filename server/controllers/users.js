@@ -53,16 +53,14 @@ module.exports = function (app, pg, connectionString) {
 	app.delete('/api/users/:id(\\d+)', (req, res) => {
 		console.log(req.body);
 
-		User.find(req.params.id, (data) => {
-			var user = new User(data);
-
-			if (user && user.isCorrectPassword(req.body.password)) {
-				user.destroy(() => {
-					res.json('User ' + req.params.id + ' deleted');
-				});
-			} else {
-				res.status(403).json({success: false});
+		User.query()
+		.deleteById(req.params.id)
+		.then((data) => {
+			if(data){
+				res.json(data);
 			}
+		}, (error) => {
+			res.json('deletion failed')
 		});
 
 	});

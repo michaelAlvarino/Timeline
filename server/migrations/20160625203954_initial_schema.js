@@ -6,14 +6,14 @@ exports.up = function(knex, Promise) {
   		table.string('email', 255);
   		table.string('passwordDigest', 255);
   		table.string('userType', 64);
-  		table.dateTime('createdDate');
-  		table.dateTime('updatedDate');
+  		table.timestamp('createdDate');
+  		table.timestamp('updatedDate');
   	})
   	.createTableIfNotExists('timelines',(table) => {
   		table.increments().primary();
   		table.string('name', 255);
-  		table.dateTime('createdDate');
-  		table.dateTime('updatedDate');
+  		table.timestamp('createdDate');
+  		table.timestamp('updatedDate');
   	})
   	.createTableIfNotExists('timelineItems', (table) => {
   		table.increments().primary();
@@ -21,10 +21,10 @@ exports.up = function(knex, Promise) {
   		table.text('content');
   		table.string('title', 255);
   		table.string('imageUrl', 255);
-  		table.integer('userId').unsigned().references('id').inTable('users');
+  		table.integer('userId');
   		table.string('status', 32);
-  		table.dateTime('createdDate');
-  		table.dateTime('updatedDate');
+  		table.timestamp('createdDate');
+  		table.timestamp('updatedDate');
   	})
   	.createTableIfNotExists('timelineItemLogs', (table) => {
   		table.increments().primary();
@@ -35,14 +35,14 @@ exports.up = function(knex, Promise) {
   		table.string('newTitle', 255);
   		table.string('oldStatus', 255);
   		table.string('newStatus', 255);
-  		table.dateTime('createdDate');
+  		table.timestamp('createdDate');
   	})
   	.createTableIfNotExists('trackingActions', (table) => {
   		table.increments().primary();
   		table.integer('userId');
   		table.string('resourceType', 255);
   		table.integer('resourceId');
-  		table.dateTime('createdDate');
+  		table.timestamp('createdDate');
   	})
   	.createTableIfNotExists('tags', (table) => {
   		table.increments().primary();

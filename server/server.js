@@ -21,7 +21,7 @@ const dbPassword = config.dbPassword;
 const dbUsername = config.dbUsername;
 const connectionString = "postgres://" +  dbUsername + ":" + dbPassword + "@localhost/timeline";
 console.log("Postgres Username: " + dbUsername, "Postgres password: " + dbPassword);
-const _knex = knex(knexConfig.production);
+const _knex = knex(knexConfig.development);
 model.knex(_knex);
 
 // =============================================
