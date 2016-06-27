@@ -1,22 +1,16 @@
 'use strict';
 /* globals module, require */
 
-const BaseModel = require('./BaseModel.js');
+//const BaseModel = require('./BaseModel.js');
 const bcrypt	= require('bcrypt');
-const config = require('../../config.json');
 const model = require('objection').Model;
 
 // Private instance variables
-var _password	= null,
-	emailRegex = new RegExp(/^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i);
+var emailRegex = new RegExp(/^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i);
 
 class User extends model{
-	static get tableName(){ return 'users' }
 	// es6 translates this to function User(){} User.prototype = Object.create(model.prototype);
-	static find(id){
-		this.query()
-		.where('id','=',id)
-	}
+	static get tableName(){ return 'users' }
 	static get jsonSchema() {
 	    return {
 	      type: 'object',

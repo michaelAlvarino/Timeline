@@ -1,13 +1,13 @@
 'use strict';
-/* globals module, console, require */
-module.exports = function (app, pg, connectionString) {
+
+module.exports = function (app) {
 	const bcrypt 	= require('bcrypt');
 	const User 		= require('./../models/User.js');
 
 	app.get('/api/users/:id(\\d+)', (req, res) => {
 		var id = req.params.id;
-		var user = User.query().findById(id);
-		user.then(
+		User.query().findById(id)
+		.then(
 			(data) => { 
 				if(data){
 					res.json(data);
@@ -51,8 +51,6 @@ module.exports = function (app, pg, connectionString) {
 	});
 
 	app.delete('/api/users/:id(\\d+)', (req, res) => {
-		console.log(req.body);
-
 		User.query()
 		.deleteById(req.params.id)
 		.then((data) => {
@@ -62,6 +60,29 @@ module.exports = function (app, pg, connectionString) {
 		}, (error) => {
 			res.json('deletion failed')
 		});
-
 	});
+
+	// users can only update email and password, we will handle userType later
+	// users need to be logged in to update their own account. 
+	// how do we handle user auth?
+	app.put('/api/users/:id(\\d+)'), (req, res) => {
+/*		var validatedUser = User.validateUser(req.body);
+		if(validatedUser === false){
+			res.json('user update failed');
+		}
+		User.query()
+		.patchAndFetchById({email: validatedUser.email,
+							passwordDigest: validatedUser.passwordDigest,
+							updatedDate: validatedUser.updatedDate
+						})
+		.then((data) => {
+			if(data){
+				res.json(data);
+			}
+		},
+			(error) => {
+				res.status(400);
+				res.json(error);
+			})*/
+	}
 };

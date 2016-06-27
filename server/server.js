@@ -17,10 +17,6 @@ const model =		objection.Model;
 // =============================================
 // connect to the db
 // =============================================
-const dbPassword = config.dbPassword;
-const dbUsername = config.dbUsername;
-const connectionString = "postgres://" +  dbUsername + ":" + dbPassword + "@localhost/timeline";
-console.log("Postgres Username: " + dbUsername, "Postgres password: " + dbPassword);
 const _knex = knex(knexConfig.development);
 model.knex(_knex);
 
@@ -59,7 +55,8 @@ updated_date		timestamp
 );*/
 
 // Users Controller
-require('./controllers/users.js')(app, pg, connectionString);
+require('./controllers/users.js')(app);
+require('./controllers/timelines.js')(app);
 // =============================================
 // run the app
 // =============================================
