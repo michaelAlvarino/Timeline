@@ -62,3 +62,4 @@ require('./controllers/timelines.js')(app);
 // =============================================
 app.listen(port);
 
+module.exports = app;
