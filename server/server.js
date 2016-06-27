@@ -3,13 +3,13 @@
 // =============================================
 // imports...
 // =============================================
-const express = 	require('express');
+const express =		require('express');
 const path = 		require('path');
 const morgan = 		require('morgan');
-const bodyParser =  require('body-parser');
+const bodyParser =	require('body-parser');
 const pg =			require('pg');
-const config =      require('../config.json');
-const knexConfig = 	require('./knexfile.js');
+const config =		require('../config.json');
+const knexConfig =	require('./knexfile.js');
 const objection =	require('objection');
 const knex =		require('knex');
 const model =		objection.Model;
@@ -30,6 +30,7 @@ var app = express();
 // =============================================
 const static_path = 	path.normalize(__dirname + '/../public');
 const port =			8000;
+app.set('tokenSecretKey', config.tokenSecretKey);
 
 // =============================================
 // middleware
@@ -45,18 +46,10 @@ app.get('/', (req,res) => {
 	res.sendFile(path.normalize(static_path + '/index.html'));
 });
 
-/*create table users(
-id 					serial, -- autoincrementing, 4 byte, unsigned integer
-email 				varchar(255),
-password_digest 	varchar(255),
-user_type			varchar(64),
-created_date		timestamp,
-updated_date		timestamp	
-);*/
-
-// Users Controller
 require('./controllers/users.js')(app);
 require('./controllers/timelines.js')(app);
+require('./controllers/authentication.js')(app);
+
 // =============================================
 // run the app
 // =============================================

@@ -12,7 +12,7 @@ module.exports = function(app){
 			if(data.enable){
 				res.json(data);
 			} else {
-				res.json('timeline does not exist');
+				res.status(404).json('timeline does not exist');
 			}
 		},
 		(error) => {
@@ -32,7 +32,7 @@ module.exports = function(app){
 			(data) => { if(data){
 				res.json(data);
 			} else {
-				res.json('timeline creation failed')
+				res.status(404).json('timeline creation failed')
 			}
 		},
 			(error) => {
