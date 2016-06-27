@@ -27,7 +27,13 @@ const Utils 	= {
 		
 		var user = jwt.decode(token, { complete: true }).payload;
 
-		return id == user.id || user.userType === 'admin';
+		return id == user.id;
+	},
+
+	isAdmin: (token) => {
+		var user = jwt.decode(token, { complete: true }).payload;
+
+		return user.userType === 'admin';
 	}
 };
 

@@ -2,7 +2,7 @@
 /* globals module, require */
 
 const User 	= require('./../models/User.js');
-const utils	= require('./utils');
+const Utils	= require('./utils');
 
 module.exports = (app) => {
 	app.get('/api/users/:id(\\d+)', (req, res) => {
@@ -25,24 +25,24 @@ module.exports = (app) => {
 		// hash passwords
 		var validatedUser = User.validateUser(req.body);
 		if (validatedUser === false) {
-			res.json(400).json('user creation failed validation'); // change to specify validation failure
+			return res.json(400).json('User failed validation'); // change to specify validation failure
 		}
 
 		User.query()
-		.insertAndFetch(validatedUser)
-		/*
-			this generates an insert statement where the column names are the object keys and values are the associated values
-		*/
-		.then((data) => {
-			if (data) {
-				res.json(data);
-			} else{
-				res.json('User creation failed');
-			}
-		})
-		.catch((error) => {
-			res.status(500).json(error);
-		});
+			.insertAndFetch(validatedUser)
+			/*
+				this generates an insert statement where the column names are the object keys and values are the associated values
+			*/
+			.then((data) => {
+				if (data) {
+					return res.json(data);
+				} else{
+					return res.status(400).json('User creation failed');
+				}
+			})
+			.catch((error) => {
+				return res.status(500).json(error);
+			});
 	});
 
 	app.delete('/api/users/:id(\\d+)', (req, res) => {
@@ -67,30 +67,37 @@ module.exports = (app) => {
 	// that token should be set in Request header. We check that header for the token and verify
 	// using jsonwebtoken.verify
 	app.put('/api/users/:id(\\d+)', (req, res) => {
-		var authenticated = utils.authenticateUserWithId(req.params.id, req.headers.timelinetoken);
-		if (!authenticated) {
-			return res.status(403).json({success: false});
-		}
+		var token 	= req.headers.timelinetoken,
+			id		= req.params.id;
 
-		var validatedUser = User.validateUser(req.body);
-
-		if (validatedUser === false) {
-			return res.status(400).json('User update failed');
+		if (!Utils.authenticateUserWithId(id, token) && !Utils.isAdmin()) {
+			return res.status(403).json({ 
+				success: false,
+				status: 403,
+				errors: [ 'Invalid credentials' ]  
+			});
 		}
 
 		User.query()
-			.patchAndFetchById(req.params.id, {
-				email: validatedUser.email,
-				passwordDigest: validatedUser.passwordDigest,
-				updatedDate: validatedUser.updatedDate,
-			})
-			.then((data) => {
-				if (data){
-					res.json(data);
+			.findById(req.params.id)
+			.then((user) => {
+				var updatedUser = User.updateUser(user, req.body);
+
+				if (updatedUser.success) {
+					return User.query().patchAndFetchById(req.params.id, updatedUser.data);
 				}
+
+				return res.status(updatedUser.status).json(updatedUser);
 			})
+			.then((user) => {
+				return res.json(user);
+			}) 
 			.catch((error) => {
-				res.status(400).json({error});
+				return res.status(400).json({ 
+					success: false,
+					status: 400,
+					message: error 
+				});
 			});
 	});
 };
