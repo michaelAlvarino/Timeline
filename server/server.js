@@ -9,13 +9,14 @@ const morgan		= require('morgan');
 const bodyParser	= require('body-parser');
 const knexConfig	= require('./knexfile.js');
 const objection		= require('objection');
-const knex			= require('knex');
+const Knex			= require('knex');
 const Model			= objection.Model;
 
 // =============================================
 // connect to the db
 // =============================================
-Model.knex(knexConfig.development);
+const knex = Knex(knexConfig.development);
+Model.knex(knex);
 
 // =============================================
 // create the app

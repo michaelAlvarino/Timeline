@@ -7,21 +7,18 @@ const utils	= require('./utils');
 module.exports = (app) => {
 	app.get('/api/users/:id(\\d+)', (req, res) => {
 		var id = req.params.id;
-		User.query().findById(id)
-		.then(
-			(data) => { 
-				if(data){
+		User.query()
+			.findById(id)
+			.then((data) => { 
+				if (data) {
 					res.json(data);
-				}
-				else{
+				} else {
 					res.status(404).json('User not found');
 				}
-			},
-			(error) => { 
-				res.status(500);
-				res.json(error); 
-			}
-		);
+			})
+			.catch((error) => {
+				res.status(500).json(error); 
+			});
 	});
 
 	app.post('/api/users/create', (req,res) => {
