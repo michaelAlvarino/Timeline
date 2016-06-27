@@ -24,9 +24,10 @@ class User extends model {
 			properties: {
 				id: {type: 'integer'},
 				passwordDigest: {type: 'string', minLength: 1, maxLength: 255},
-				email: {type: 'string', minLength: 5, maxLength: 255, pattern: '^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$'},
-				createdDate: {type: 'string'},
-				updatedDate: {type: 'string'}
+				email: {type: 'string', format: 'email', minLength: 5, maxLength: 255, pattern: '^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$'},
+				userType: { type: 'string', pattern: '^user$|^mod$|^admin$|^therock$' },
+				createdDate: {type: 'string', format: 'date-time'},
+				updatedDate: {type: 'string', format: 'date-time'}
 			}
 		};
 	}
@@ -72,6 +73,7 @@ class User extends model {
 		}
 
 		// Check user type
+		// This should be checked in with JSON Schema, but I'm bad at handling those errors
 		if (userAttributes.userType && 
 			['user', 'mod', 'admin', 'therock'].indexOf(userAttributes.userType) > 0) {
 			user.userType = userAttributes.userType;
@@ -80,6 +82,7 @@ class User extends model {
 		}
 
 		// Check email
+		// This should be checked in with JSON Schema, but I'm bad at handling those errors
 		if (userAttributes.email && userAttributes.email.search(emailRegex) >= 0) {
 			user.email = userAttributes.email;
 		} else if (userAttributes.email) {
