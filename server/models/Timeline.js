@@ -1,10 +1,12 @@
 'use strict';
+/* globals require, module */
 
-const model = require('objection').Model;
+const Model = require('objection').Model;
 
-class Timeline extends model{
-
-	static get tableName(){ return 'timelines' }
+class Timeline extends Model {
+	static get tableName() { 
+		return 'timelines'; 
+	}
 
 	static get jsonSchema(){
 		return {
@@ -19,7 +21,6 @@ class Timeline extends model{
 			}
 		};
 	}
-
 }
 
 module.exports = Timeline;

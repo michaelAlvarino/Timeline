@@ -6,11 +6,12 @@ const config	= require('../../config');
 const bcrypt	= require('bcrypt');
 const model		= require('objection').Model;
 
-// Private instance variables
+/* start region private variables */
 var emailRegex = new RegExp(/^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i);
+/* end region private variables */
 
 // ES6 translates this to function User(){}; User.prototype = Object.create(model.prototype);
-class User extends model{
+class User extends model {
 	static get tableName () { 
 		return 'users'; 
 	}
@@ -49,12 +50,17 @@ class User extends model{
 			.where('email', email)
 			.then((users) => {
 				return new Promise((fulfill, reject) => {
-					if (users.length === 1 && User.hasCorrectPassword(password, users[0].passwordDigest)) {
-						var token = jwt.sign(users[0], config.tokenSecretKey, {
+					if (users.length === 1 && _hasCorrectPassword(password, users[0].passwordDigest)) {
+						var token = jwt.sign({
+								id: users[0].id,
+								userType: users[0].userType
+							}, 
+							config.tokenSecretKey,
+							{
 							expiresIn: '1 day'
 						});
 
-						fulfill({token: token});
+						fulfill(token);
 					} else {
 						reject('Invalid credentials');
 					}
@@ -66,14 +72,16 @@ class User extends model{
 				});
 			});
 	}
-
-	static hasCorrectPassword (password, passwordDigest) {
-		return bcrypt.compareSync(password, passwordDigest);
-	}
 }
 
+/* start region private methods */
 var _createPasswordDigest = (password) => {
 	return bcrypt.hashSync(password, bcrypt.genSaltSync());
 };
+
+var _hasCorrectPassword  = (password, passwordDigest) => {
+	return bcrypt.compareSync(password, passwordDigest);
+}
+/* end region private methods */
 
 module.exports = User;

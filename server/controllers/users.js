@@ -67,19 +67,15 @@ module.exports = (app) => {
 	// that token should be set in Request header. We check that header for the token and verify
 	// using jsonwebtoken.verify
 	app.put('/api/users/:id(\\d+)', (req, res) => {
-		var authenticated = utils.authenticateUserWithId(
-			req.params.id, 
-			req.headers.timelinetoken
-		);
-
+		var authenticated = utils.authenticateUserWithId(req.params.id, req.headers.timelinetoken);
 		if (!authenticated) {
 			return res.status(403).json({success: false});
 		}
 
 		var validatedUser = User.validateUser(req.body);
 
-		if (validatedUser === false){
-			res.status(400).json('User update failed');
+		if (validatedUser === false) {
+			return res.status(400).json('User update failed');
 		}
 
 		User.query()
