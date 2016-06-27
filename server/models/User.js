@@ -53,7 +53,7 @@ class User extends model{
 						var token = jwt.sign(users[0], config.tokenSecretKey, {
 							expiresIn: '1 day'
 						});
-						
+
 						fulfill({token: token});
 					} else {
 						reject('Invalid credentials');
@@ -64,7 +64,7 @@ class User extends model{
 				return new Promise((fulfill, reject) => {
 					reject(errors);
 				});
-			})
+			});
 	}
 
 	static hasCorrectPassword (password, passwordDigest) {
@@ -75,9 +75,5 @@ class User extends model{
 var _createPasswordDigest = (password) => {
 	return bcrypt.hashSync(password, bcrypt.genSaltSync());
 };
-
-var _hasCorrectPassword = (password) => {
-	return bcrypt.compareSync(password, this.passwordDigest);
-}
 
 module.exports = User;

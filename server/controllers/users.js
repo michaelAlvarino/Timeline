@@ -1,11 +1,10 @@
 'use strict';
 /* globals module, require */
 
-module.exports = (app) => {
-	const User 		= require('./../models/User.js');
-	const utils		= require('./utils');
-	const jwt 		= require('jsonwebtoken');
+const User 	= require('./../models/User.js');
+const utils	= require('./utils');
 
+module.exports = (app) => {
 	app.get('/api/users/:id(\\d+)', (req, res) => {
 		var id = req.params.id;
 		User.query().findById(id)
