@@ -1,8 +1,8 @@
 'use strict';
 /* globals module, require */
 
-const User 	= require('./../models/User.js');
-const Utils	= require('./utils');
+const User			= require('./../models/User');
+const AuthHelper	= require('./../helpers/AuthHelper');
 
 module.exports = (app) => {
 	app.get('/api/users/:id(\\d+)', (req, res) => {
@@ -22,21 +22,17 @@ module.exports = (app) => {
 	});
 
 	app.post('/api/users/create', (req,res) => {
-		// hash passwords
-		var validatedUser = User.validateUser(req.body);
-		if (validatedUser === false) {
-			return res.json(400).json('User failed validation'); // change to specify validation failure
+		var user = User.createUser(req.body);
+		if (!user.success) {
+			return res.status(400).json(user);
 		}
 
 		User.query()
-			.insertAndFetch(validatedUser)
-			/*
-				this generates an insert statement where the column names are the object keys and values are the associated values
-			*/
+			.insertAndFetch(user.data)
 			.then((data) => {
 				if (data) {
 					return res.json(data);
-				} else{
+				} else {
 					return res.status(400).json('User creation failed');
 				}
 			})
@@ -47,14 +43,15 @@ module.exports = (app) => {
 
 	app.delete('/api/users/:id(\\d+)', (req, res) => {
 		User.query()
-		.deleteById(req.params.id)
-		.then((data) => {
-			if(data){
-				res.json(data);
-			}
-		}, (error) => {
-			res.json('deletion failed');
-		});
+			.deleteById(req.params.id)
+			.then((data) => {
+				if(data){
+					res.json(data);
+				}
+			})
+			.catch((error) => {
+				res.status(400).json('User deletion failed');
+			});
 	});
 
 	// users can only update email and password, we will handle userType later
@@ -70,7 +67,7 @@ module.exports = (app) => {
 		var token 	= req.headers.timelinetoken,
 			id		= req.params.id;
 
-		if (!Utils.authenticateUserWithId(id, token) && !Utils.isAdmin()) {
+		if (!AuthHelper.authenticateUserWithId(id, token) && !AuthHelper.isAdmin()) {
 			return res.status(403).json({ 
 				success: false,
 				status: 403,

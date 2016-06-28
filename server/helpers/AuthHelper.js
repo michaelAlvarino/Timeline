@@ -1,9 +1,10 @@
-'use strict';
 /* globals module, require */
+'use strict';
 
 const jwt		= require('jsonwebtoken');
 const config	= require('../../config');
-const Utils 	= {
+
+const AuthHelper = {
 	/**
 	 * Check that the user has a signed JSON Web Token
 	 * 
@@ -17,8 +18,8 @@ const Utils 	= {
 	/**
 	 * Check that the user has a signed JSON token with the same ID
 	 * 
-	 * @param	{[string]}		id		ID of the user to alter
-	 * @param	{[string]}		token	String representing a hashed JSON Web Token
+	 * @param	{[string]}	id		ID of the user to alter
+	 * @param	{[string]}	token	String representing a hashed JSON Web Token
 	 */
 	authenticateUserWithId: (id, token) => {
 		if (!Utils.authenticateUser(token)) {
@@ -30,6 +31,12 @@ const Utils 	= {
 		return id == user.id;
 	},
 
+	/**
+	 * Returns true if the user is an admin
+	 * 
+	 * @param	{[string]}	token	A hashed JWT
+	 * @return	{[boolean]}
+	 */
 	isAdmin: (token) => {
 		var user = jwt.decode(token, { complete: true }).payload;
 
@@ -37,4 +44,4 @@ const Utils 	= {
 	}
 };
 
-module.exports = Utils;
+module.exports = AuthHelper;

@@ -33,10 +33,6 @@ class User extends model {
 	}
 
 	static validateUser(userAttributes) {
-		if (userAttributes.id > 0) {
-
-		}
-
 		if(!userAttributes.password || !userAttributes.email || 
 			(userAttributes.email.search(emailRegex) === -1)) { // search takes the regex and returns the location or -1 on failure
 			return false;
@@ -73,21 +69,21 @@ class User extends model {
 		}
 
 		// Check user type
-		// This should be checked in with JSON Schema, but I'm bad at handling those errors
-		if (userAttributes.userType && 
-			['user', 'mod', 'admin', 'therock'].indexOf(userAttributes.userType) > 0) {
-			user.userType = userAttributes.userType;
-		} else if (userAttributes.userType) {
-			errors.push('Invalid user type');
-		}
+		// This gets checked in JSON Schema, but I'm bad at handling those errors
+		// if (userAttributes.userType && 
+		// 	['user', 'mod', 'admin', 'therock'].indexOf(userAttributes.userType) > 0) {
+		// 	user.userType = userAttributes.userType;
+		// } else if (userAttributes.userType) {
+		// 	errors.push('Invalid user type');
+		// }
 
 		// Check email
-		// This should be checked in with JSON Schema, but I'm bad at handling those errors
-		if (userAttributes.email && userAttributes.email.search(emailRegex) >= 0) {
-			user.email = userAttributes.email;
-		} else if (userAttributes.email) {
-			errors.push('Invalid email');
-		}
+		// This gets checked in JSON Schema, but I'm bad at handling those errors
+		// if (userAttributes.email && userAttributes.email.search(emailRegex) >= 0) {
+		// 	user.email = userAttributes.email;
+		// } else if (userAttributes.email) {
+		// 	errors.push('Invalid email');
+		// }
 
 		if (errors.length > 0) {
 			return {
@@ -107,7 +103,33 @@ class User extends model {
 	}
 
 	static createUser (userAttributes) {
+		var result = {
+				success: true,
+				data: null,
+				errors: []
+			},
+			validPassword = _isPasswordValid(userAttributes.password);
 
+		if (!validPassword.success) {
+			result.errors.concat(validPassword.errors);
+			result.success = false;
+		}
+
+		if (!userAttributes.userType) {
+			userAttributes.userType = 'user';
+		}
+
+		var dt = new Date().toISOString();
+
+		result.data = {
+			email:			userAttributes.email,
+			passwordDigest: validPassword.data,
+			userType:		userAttributes.userType,
+			createdDate:	dt,
+			updatedDate:	dt
+		};
+
+		return result;
 	}
 
 	static findByCredentials (email, password) {

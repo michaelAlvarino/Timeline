@@ -43,9 +43,9 @@ app.get('/', (req,res) => {
 	res.sendFile(path.normalize(static_path + '/index.html'));
 });
 
-require('./controllers/users.js')(app);
-require('./controllers/timelines.js')(app);
-require('./controllers/authentication.js')(app);
+require('./controllers/UsersController')(app);
+require('./controllers/TimelinesController')(app);
+require('./controllers/AuthenticationController')(app);
 
 // =============================================
 // run the app
