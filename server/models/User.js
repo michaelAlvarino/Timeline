@@ -68,23 +68,6 @@ class User extends model {
 			}
 		}
 
-		// Check user type
-		// This gets checked in JSON Schema, but I'm bad at handling those errors
-		// if (userAttributes.userType && 
-		// 	['user', 'mod', 'admin', 'therock'].indexOf(userAttributes.userType) > 0) {
-		// 	user.userType = userAttributes.userType;
-		// } else if (userAttributes.userType) {
-		// 	errors.push('Invalid user type');
-		// }
-
-		// Check email
-		// This gets checked in JSON Schema, but I'm bad at handling those errors
-		// if (userAttributes.email && userAttributes.email.search(emailRegex) >= 0) {
-		// 	user.email = userAttributes.email;
-		// } else if (userAttributes.email) {
-		// 	errors.push('Invalid email');
-		// }
-
 		if (errors.length > 0) {
 			return {
 				success: false,

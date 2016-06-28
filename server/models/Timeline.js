@@ -4,7 +4,7 @@
 const Model = require('objection').Model;
 
 class Timeline extends Model {
-	static get tableName() { 
+	static get tableName () { 
 		return 'timelines'; 
 	}
 
@@ -16,8 +16,8 @@ class Timeline extends Model {
 				id: {type: 'integer'},
 				name: {type: 'string', minLength: 1, maxLength: 255},
 				enable: {type: 'boolean'},
-				createdDate: {type: 'string'},
-				updatedDate: {type: 'string'}
+				createdDate: {type: 'string', format: 'date-time'},
+				updatedDate: {type: 'string', format: 'date-time'}
 			}
 		};
 	}
