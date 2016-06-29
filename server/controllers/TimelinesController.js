@@ -1,8 +1,11 @@
 'use strict';
 /* globals module, require */
 
+const Timeline = require('./../models/Timeline.js');
+const AuthHelper = require('../helpers/AuthHelper.js');
+
 module.exports = function(app){
-	const Timeline = require('./../models/Timeline.js');
+
 
 	app.get('/api/timelines/:id(\\d+)', (req, res) => {
 
@@ -57,5 +60,28 @@ module.exports = function(app){
 			.catch((error) => { 
 				res.json(error);
 			});
+	});
+
+	app.put('/api/timelines/:id(\\d+)'), (req, res) => {
+		var token 	= req.headers.timelinetoken,
+			id 		= req.params.id;
+
+		if(!AuthHelper.authenticateUser(token)){
+			return res.status(403).json({
+				success: false,
+				status: 403,
+				errors: ['Invalid Credentials']
+			})
+		}
+
+		Timeline.Query()
+			.findById(id)
+			.then((timeline) => {
+				var updatedTimeline = Timeline.updateTimeline(timeline, req.body);
+
+			})
+			.catch((error) => {
+
+			})
 	});
 };

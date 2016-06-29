@@ -21,6 +21,10 @@ class Timeline extends Model {
 			}
 		};
 	}
+
+	static updateTimeline(timeline, timelineAttributes){
+		
+	}
 }
 
 module.exports = Timeline;
