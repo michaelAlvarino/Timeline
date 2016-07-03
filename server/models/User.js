@@ -11,6 +11,10 @@ var emailRegex = new RegExp(/^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'
 /* end region private variables */
 
 // ES6 translates this to function User(){}; User.prototype = Object.create(model.prototype);
+
+/**
+ * @class User
+ */
 class User extends model {
 	static get tableName () { 
 		return 'users'; 
@@ -148,8 +152,9 @@ class User extends model {
 /**
  * Creates a new BCrypt hashed password digest
  * 
- * @param  {[string]}	password
- * @return {[string]}
+ * @memberOf User
+ * @param  {string}	password
+ * @return {string}
  */
 var _createPasswordDigest = (password) => {
 	return bcrypt.hashSync(password, bcrypt.genSaltSync());
@@ -158,9 +163,10 @@ var _createPasswordDigest = (password) => {
 /**
  * Returns true if a password matches a given BCrypt hashed password digest
  * 
- * @param	{[string]}	password		
- * @param	{[string]}	passwordDigest
- * @return	{[boolean]}
+ * @memberOf User
+ * @param	{string}	password
+ * @param	{string}	passwordDigest
+ * @return	{boolean}
  */
 var _hasCorrectPassword  = (password, passwordDigest) => {
 	return bcrypt.compareSync(password, passwordDigest);
@@ -169,8 +175,9 @@ var _hasCorrectPassword  = (password, passwordDigest) => {
 /**
  * Returns an object with the keys as requirement descriptions and the values as the validity
  * 
- * @param	{[string]}	password
- * @return	{[object]}
+ * @memberOf User
+ * @param	{string}	password
+ * @return	{Object}
  */
 var _getPasswordValidations = (password) => {
 	return {
@@ -186,8 +193,9 @@ var _getPasswordValidations = (password) => {
 /**
  * Validates if a password is valid
  * 
- * @param	{[string]}	password
- * @return	{[object]}
+ * @memberOf User
+ * @param	{string}	password
+ * @return	{Object}
  */
 var _isPasswordValid = (password) => {
 	var result = {
@@ -211,6 +219,27 @@ var _isPasswordValid = (password) => {
 
 	return result;
 };
+
+/**
+ * Returns a Promise that fulfills when an email is unique. Still not used
+ * 
+ * @memberOf User
+ * @param	{string}	email
+ * @return	{Promise}
+ */
+var _uniqueEmail = (email) => {
+	return User.query()
+		.where('email', email)
+		.then((data) => {
+			return new Promise ((fulfill, reject) => {
+				if (data) {
+					return fulfill(true);
+				}
+
+				return reject(false);
+			}); 
+		});
+}
 /* end region private methods */
 
 module.exports = User;
