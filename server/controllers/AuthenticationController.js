@@ -2,6 +2,7 @@
 /* globals require, module */
 
 const User = require('./../models/User.js');
+const Blacklist = require('./../models/Blacklist.js');
 
 module.exports = function(app) {
 	app.post('/api/login', (req, res) => {
@@ -10,6 +11,18 @@ module.exports = function(app) {
 
 		User.findByCredentials(email, password)
 			.then((token) => {
+				var defaultExpirationTimeInDays = 10;
+				// only split it into two lines for legibility.. though i'm honestly not sure how to make it
+				// one "self referencing" line. also the defaultExpirationtime[] variable is only used here
+				// and may be useless
+				var expiryDate = new Date();
+				expiryDate = expiryDate.setUTCDate(expiryDate.getUTCDate() + defaultExpirationTimeInDays)
+				// add token to blacklist table
+				Blacklist.query()
+				.insert({token: token,
+					expirationDate: expiryDate})
+
+				// successfully logged in
 				res.json({
 					success: true,
 					token: token

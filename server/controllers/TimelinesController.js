@@ -11,7 +11,7 @@ module.exports = function(app){
 
 		var id = req.params.id;
 
-		Timeline.query().findById(id)
+		Timeline.query().findById(id).where('enable', '=', 't')
 			.then((data) => {
 				if (data.enable) {
 					res.json(data);
@@ -51,6 +51,7 @@ module.exports = function(app){
 	// do we have some weird obligation to do it like we would with users?
 	// 
 	// Nah, this is a good strategy
+	// also means that in our get, we should only return timelines that are enabled
 	app.delete('/api/timelines/:id(\\d+)',(req, res) => {
 		Timeline.query()
 			.patchAndFetchById(req.params.id, { enable: false })
@@ -62,26 +63,26 @@ module.exports = function(app){
 			});
 	});
 
-	app.put('/api/timelines/:id(\\d+)'), (req, res) => {
+	app.put('/api/timelines/:id(\\d+)', (req, res) => {
 		var token 	= req.headers.timelinetoken,
 			id 		= req.params.id;
 
 		if(!AuthHelper.authenticateUser(token)){
-			return res.status(403).json({
+			res.status(403).json({
 				success: false,
 				status: 403,
 				errors: ['Invalid Credentials']
 			})
 		}
 
-		Timeline.Query()
+		Timeline.query()
 			.findById(id)
 			.then((timeline) => {
 				var updatedTimeline = Timeline.updateTimeline(timeline, req.body);
-
+				res.json(updatedTimeline);
 			})
 			.catch((error) => {
-
+				res.json(error);
 			})
 	});
 };
