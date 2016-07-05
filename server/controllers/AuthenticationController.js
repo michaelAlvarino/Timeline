@@ -3,6 +3,7 @@
 
 const User = require('./../models/User.js');
 const Blacklist = require('./../models/Blacklist.js');
+const AuthHelper = require('../helpers/AuthHelper.js');
 
 module.exports = function(app) {
 	app.post('/api/login', (req, res) => {
@@ -19,14 +20,18 @@ module.exports = function(app) {
 				expiryDate = expiryDate.setUTCDate(expiryDate.getUTCDate() + defaultExpirationTimeInDays)
 				// add token to blacklist table
 				Blacklist.query()
-				.insert({token: token,
-					expirationDate: expiryDate})
+				.insertAndFetch({token: token,
+					expirationDate: expiryDate.toISOString()})
+				.then((data) => {
+					res.json({
+						success: true,
+						token: token
+					});
+				})
+				.catch((errors) => {
+					res.json({success: false, message: errors})
+				})
 
-				// successfully logged in
-				res.json({
-					success: true,
-					token: token
-				});
 			})
 			.catch((errors) => {
 				res.status(403).json({success: false, message: errors});
@@ -49,9 +54,21 @@ module.exports = function(app) {
 
 	 */
 	app.post('/api/logout', (req, res) => {
-		res.status(500).json({ 
-			success: false, 
-			message: 'You are logged in forever :(' 
-		});
+		var now = new Date().toISOString()
+		, token = req.body.token;
+		// need to make sure we're logging out the right user, who is currently logged in
+		if(AuthHelper.authenticateUser(token) && !(AuthHelper.isAdmin(token))){
+			Blacklist.delete()
+			.where('token', '=', token)
+			.then((numberOfRowsDeleted) => {
+				res.json({
+					success: true,
+					message: 'successfully logged out'
+				});
+			})
+			.catch((errors) => {
+				res.status(403).json({success: false, message: errors});
+			})
+		}
 	});
 };
