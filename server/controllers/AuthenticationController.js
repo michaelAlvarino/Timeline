@@ -13,7 +13,7 @@ module.exports = function(app) {
 			.then((token) => {
 				var defaultExpirationTimeInDays = 10;
 				// only split it into two lines for legibility.. though i'm honestly not sure how to make it
-				// one "self referencing" line. also the defaultExpirationtime[] variable is only used here
+				// one "self referencing" line. also the defaultExpirationtime variable is only used here
 				// and may be useless
 				var expiryDate = new Date();
 				expiryDate = expiryDate.setUTCDate(expiryDate.getUTCDate() + defaultExpirationTimeInDays)
