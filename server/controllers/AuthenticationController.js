@@ -70,5 +70,6 @@ module.exports = function(app) {
 				res.status(403).json({success: false, message: errors});
 			})
 		}
+		// maybe add an else where we handle the case of an admin logging out another user
 	});
 };
