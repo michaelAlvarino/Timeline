@@ -46,6 +46,7 @@ app.get('/', (req,res) => {
 require('./controllers/UsersController')(app);
 require('./controllers/TimelinesController')(app);
 require('./controllers/AuthenticationController')(app);
+require('./controllers/TimelineItemController')(app);
 
 // =============================================
 // run the app
