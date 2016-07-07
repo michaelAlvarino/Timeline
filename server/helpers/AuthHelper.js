@@ -5,7 +5,7 @@ const jwt		= require('jsonwebtoken');
 const config	= require('../../config');
 
 /**
- * @namespace AuthHelper
+ * @module AuthHelper
  */
 const AuthHelper = {
 	/**

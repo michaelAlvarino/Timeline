@@ -22,23 +22,37 @@ module.exports = (app) => {
 	});
 
 	app.post('/api/users/create', (req,res) => {
-		var user = User.createUser(req.body);
-		if (!user.success) {
-			return res.status(400).json(user);
-		}
-
-		User.query()
-			.insertAndFetch(user.data)
-			.then((data) => {
-				if (data) {
-					return res.json(data);
-				} else {
-					return res.status(400).json('User creation failed');
-				}
+		var user = User.createUser(req.body)
+			.then((user) => {
+				User.query()
+					.insertAndFetch(user.data)
+					.then((data) => {
+						if (data) {
+							return res.json(data);
+						} else {
+							return res.status(400).json('User creation failed');
+						}
+					});
 			})
 			.catch((error) => {
-				return res.status(500).json(error);
+				return res.status(400).json(error);
 			});
+		// if (!user.success) {
+		// 	return res.status(400).json(user);
+		// }
+
+		// User.query()
+		// 	.insertAndFetch(user.data)
+		// 	.then((data) => {
+		// 		if (data) {
+		// 			return res.json(data);
+		// 		} else {
+		// 			return res.status(400).json('User creation failed');
+		// 		}
+		// 	})
+		// 	.catch((error) => {
+		// 		return res.status(500).json(error);
+		// 	});
 	});
 
 	app.delete('/api/users/:id(\\d+)', (req, res) => {
@@ -98,7 +112,26 @@ module.exports = (app) => {
 			});
 	});
 
-	app.get('api/users/test', (req, res) => {
+	app.post('/api/users/test', (req, res) => {
+		var email = req.body.email;
 
-	})
+		User.testUniqueEmail(email)
+			.then((data) => {
+				console.log('Being fulfilled!', data);
+
+				return res.json({
+					status: 200, 
+					data: data,
+					success: true
+				});
+			})
+			.catch((data) => {
+				console.log('Being rejected!');
+				return res.json({
+					status: 200, 
+					data: data,
+					success: false
+				});
+			});
+	});
 };

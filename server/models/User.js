@@ -108,15 +108,26 @@ class User extends model {
 
 		var dt = new Date().toISOString();
 
-		result.data = {
-			email:			userAttributes.email,
-			passwordDigest: validPassword.data,
-			userType:		userAttributes.userType,
-			createdDate:	dt,
-			updatedDate:	dt
-		};
+		return _uniqueEmail(userAttributes.email)
+			.then((data) => {
+				return new Promise ((fulfill, reject) => {
+					result.data = {
+						email:			userAttributes.email,
+						passwordDigest: validPassword.data,
+						userType:		userAttributes.userType,
+						createdDate:	dt,
+						updatedDate:	dt
+					};
+					return fulfill(result);
+				});
+			}, (data) => {
+				return new Promise ((fulfill, reject) => {
+					result.success = false;
+					result.errors.push('Email already taken');
 
-		return result;
+					return reject(result);
+				});
+			});
 	}
 
 	static findByCredentials (email, password) {
@@ -145,6 +156,10 @@ class User extends model {
 					reject(errors);
 				});
 			});
+	}
+
+	static testUniqueEmail (email) {
+		return _uniqueEmail(email);
 	}
 }
 
@@ -232,12 +247,17 @@ var _uniqueEmail = (email) => {
 		.where('email', email)
 		.then((data) => {
 			return new Promise ((fulfill, reject) => {
-				if (data) {
+				if (data.length > 0) {
+					return reject(false);
+				} else {
 					return fulfill(true);
 				}
-
-				return reject(false);
 			}); 
+		})
+		.catch((err) => {
+			return new Promise((fulfill, reject) => {
+				return reject(err);
+			});
 		});
 }
 /* end region private methods */

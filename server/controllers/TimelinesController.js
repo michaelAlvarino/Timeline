@@ -7,6 +7,13 @@ const AuthHelper = require('../helpers/AuthHelper.js');
 module.exports = function(app){
 
 
+	/**
+	 * GET route for Timeline object
+	 *
+	 * @memberOf	TimelinesController
+	 * @function
+	 * @name		/api/timelines/:id
+	 */
 	app.get('/api/timelines/:id(\\d+)', (req, res) => {
 
 		var id = req.params.id;
