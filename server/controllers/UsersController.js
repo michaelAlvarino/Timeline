@@ -24,15 +24,14 @@ module.exports = (app) => {
 	app.post('/api/users/create', (req,res) => {
 		var user = User.createUser(req.body)
 			.then((user) => {
-				User.query()
-					.insertAndFetch(user.data)
-					.then((data) => {
-						if (data) {
-							return res.json(data);
-						} else {
-							return res.status(400).json('User creation failed');
-						}
-					});
+				return User.query().insertAndFetch(user.data);
+			})
+			.then((data) => {
+				if (data) {
+					return res.json(data);
+				} else {
+					return res.status(400).json('User creation failed');
+				}
 			})
 			.catch((error) => {
 				return res.status(400).json(error);
