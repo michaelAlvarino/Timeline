@@ -1,3 +1,4 @@
+/* globals module, require */
 'use strict';
 
 module.exports = function(app){
@@ -10,37 +11,37 @@ module.exports = function(app){
 		var id = req.params.id;
 
 		TimelineItem.query()
-		.findById(id)
-		.then((data) => {
-			res.json({
-				success: true,
-				data: data
-				message: null
+			.findById(id)
+			.then((data) => {
+				res.json({
+					success: true,
+					data: data,
+					message: null
+				});
 			})
-		})
-		.catch((error) => {
-			res.json({
-				success: false,
-				data: null,
-				message: error
-			})
-		})
-	})
+			.catch((error) => {
+				res.json({
+					success: false,
+					data: null,
+					message: error
+				});
+			});
+	});
 
 	app.post('/api/timelineItem/create', (req, res) =>{
 
-		var dt = new Date().toISOString()
-		, token = req.body.token
-		, timelineItem;
+		var dt = new Date().toISOString(),
+			token = req.body.token,
+			timelineItem;
 
 
 		if(token && AuthHelper.authenticateUser(token)){
 			timelineItem = {
-				content:
-				title:
-				imageUrl:
-				userId:
-				status:
+				content: '',
+				title: '',
+				imageUrl: '',
+				userId: 0,
+				status: '',
 				createdDate: dt,
 				updatedDate: dt
 			};
@@ -50,5 +51,5 @@ module.exports = function(app){
 		}
 
 
-	})
+	});
 }

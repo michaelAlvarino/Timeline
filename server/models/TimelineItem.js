@@ -8,6 +8,7 @@ const Model = require('objection').Model;
  * @extends {Model}
  */
 var TimelineItem = function() {
+	Model.apply(this, arguments);
 	// Need to call 'super()' here
 	// You can do it by using call or apply
 	// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply
@@ -26,7 +27,7 @@ var TimelineItem = function() {
 // So we can just write Model.extend(TimelineItem);
 TimelineItem.prototype = Model.prototype;
 
-TimlineItem.tableName = 'timelineItems';
+TimelineItem.tableName = 'timelineItems';
 
 TimelineItem.jsonSchema = {
 	type: 'object',
@@ -70,3 +71,5 @@ TimelineItem.jsonSchema = {
 //
 //
 // So yeah... just set TimelineItem.jsonSchema to the return object you wrote
+
+module.exports = TimelineItem;
