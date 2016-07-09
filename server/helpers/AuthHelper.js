@@ -25,7 +25,7 @@ const AuthHelper = {
 	 * @param	{string}	token	String representing a hashed JSON Web Token
 	 */
 	authenticateUserWithId: (id, token) => {
-		if (!Utils.authenticateUser(token)) {
+		if (!AuthHelper.authenticateUser(token)) {
 			return false;
 		}
 		
