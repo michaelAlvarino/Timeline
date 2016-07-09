@@ -7,7 +7,7 @@ const express		= require('express');
 const path			= require('path');
 const morgan		= require('morgan');
 const bodyParser	= require('body-parser');
-const knexConfig	= require('./knexfile.js');
+const knexConfig	= require('../knexfile.js');
 const objection		= require('objection');
 const Knex			= require('knex');
 const Model			= objection.Model;
@@ -15,13 +15,15 @@ const Model			= objection.Model;
 // =============================================
 // connect to the db
 // =============================================
-const knex = Knex(knexConfig.development);
+const knexEnv = process.env.NODE_ENV || 'development';
+const knex = Knex(knexConfig[knexEnv]);
 Model.knex(knex);
 
 // =============================================
 // create the app
 // =============================================
 var app = express();
+app.knex = knex;
 
 // =============================================
 // configuration
