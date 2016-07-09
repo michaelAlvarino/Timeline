@@ -1,7 +1,10 @@
+/* globals process, require, describe, it */
+'use strict';
+
+process.env.NODE_ENV = 'test';
+
 const chai		= require('chai');
-const should	= chai.should();
 const assert	= chai.assert;
-const expect	= chai.expect;
 const User		= require('../server/models/User');
 
 const validUser = {
@@ -41,5 +44,5 @@ describe('User', () => {
 			invalidUser.password = null;
 			assert.equal(User.validateUser(invalidUser), false);
 		});
-	})
+	});
 });
