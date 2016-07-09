@@ -36,22 +36,6 @@ module.exports = (app) => {
 			.catch((error) => {
 				return res.status(400).json(error);
 			});
-		// if (!user.success) {
-		// 	return res.status(400).json(user);
-		// }
-
-		// User.query()
-		// 	.insertAndFetch(user.data)
-		// 	.then((data) => {
-		// 		if (data) {
-		// 			return res.json(data);
-		// 		} else {
-		// 			return res.status(400).json('User creation failed');
-		// 		}
-		// 	})
-		// 	.catch((error) => {
-		// 		return res.status(500).json(error);
-		// 	});
 	});
 
 	app.delete('/api/users/:id(\\d+)', (req, res) => {
