@@ -55,6 +55,17 @@ module.exports = (app) => {
 	});
 
 	app.delete('/api/users/:id(\\d+)', (req, res) => {
+		var token = req.body.timelinetoken || req.header.timelinetoken,
+			id = req.params.id;
+
+		if (!AuthHelper.authenticateUserWithId(id, token)) {
+			return res.status(403).json({
+				success: false,
+				status: 403,
+				errors: ['Invalid authentication']
+			});
+		}
+
 		User.query()
 			.deleteById(req.params.id)
 			.then((data) => {
