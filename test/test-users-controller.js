@@ -26,9 +26,9 @@ describe('UsersController', () => {
 			});
 	});
 
-	afterEach(function(done) {
+	afterEach((done) => {
 		knex.migrate.rollback()
-			.then(function() {
+			.then(() => {
 				done();
 			});
 	});
@@ -44,6 +44,14 @@ describe('UsersController', () => {
 				})
 				.end((err, res) => {
 					res.should.have.status(200);
+					res.should.be.json;
+
+					res.body.should.have.property('id');
+					res.body.id.should.equal(3);
+
+					res.body.should.have.property('email');
+					res.body.email.should.equal('ron.weasley@hogwarts.edu');
+
 					done();
 				})
 		});
@@ -65,7 +73,12 @@ describe('UsersController', () => {
 				.end((err, res) => {
 					res.should.have.status(200);
 					res.should.be.json;
+					
 					res.body.should.have.property('email');
+					res.body.email.should.equal('draco.malfoy@hogwarts.edu');
+
+					res.body.should.have.property('id');
+					res.body.id.should.equal(2);
 
 					done();
 				});
@@ -73,21 +86,13 @@ describe('UsersController', () => {
 	})
 
 	describe('DELETE', () => {
-		it('should delete a single user', (done) => {
-			chai.request(server)
-				.delete('/api/users/1275123470')
-				.end((err, res) => {
-					res.body.should.equal('User not found');
-					res.should.not.have.status(200);
-					done();
-				});
-
+		it('should fail to delete a user without a JWT', (done) => {
 			chai.request(server)
 				.delete('/api/users/2')
 				.end((err, res) => {
-					res.should.have.status(200);
+					res.should.have.status(403);
 					done();
 				}); 
-		})
+		});
 	})
 });
