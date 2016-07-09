@@ -15,8 +15,8 @@ const Model			= objection.Model;
 // =============================================
 // connect to the db
 // =============================================
-const knexEnv = process.env.NODE_ENV || 'development';
-const knex = Knex(knexConfig[knexEnv]);
+const env = process.env.NODE_ENV || 'development';
+const knex = Knex(knexConfig[env]);
 Model.knex(knex);
 
 // =============================================
@@ -36,7 +36,9 @@ const port			= 8000;
 // =============================================
 app.use(express.static(static_path));
 app.use(bodyParser.json());
-app.use(morgan('combined'));
+if (env === 'development') {
+    app.use(morgan('combined'));
+}
 
 // =============================================
 // routing
