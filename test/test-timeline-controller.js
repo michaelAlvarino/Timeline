@@ -94,9 +94,9 @@ describe('TimelineController', () => {
 	})
 
 	describe('DELETE', () => {
-		it('should fail to delete a user without a JWT', (done) => {
+		it('should fail to delete a timeline without a JWT', (done) => {
 			chai.request(server)
-				.delete('/api/users/2')
+				.delete('/api/timelines/1')
 				.end((err, res) => {
 					res.should.have.status(403);
 					done();

@@ -69,13 +69,28 @@ module.exports = function(app){
 	// Nah, this is a good strategy
 	// also means that in our get, we should only return timelines that are enabled
 	app.delete('/api/timelines/:id(\\d+)',(req, res) => {
+		var token 	= req.headers.timelinetoken,
+			id 		= req.params.id;
+
+		if(!AuthHelper.authenticateUser(token)){
+			return res.status(403).json({
+				success: false,
+				errors: ['Invalid Credentials']
+			});
+		}	
+
 		Timeline.query()
-			.patchAndFetchById(req.params.id, { enable: false })
+			.patchAndFetchById(id, { enable: false })
 			.then((data) => { 
-				return res.json('success, timeline disabled'); 
+				return res.json({
+					success: true,
+					data: ['success, timeline disabled']}
+				); 
 			})
 			.catch((error) => { 
-				return res.json(error);
+				return res.status(500).json({
+					errors: [error]
+				});
 			});
 	});
 
