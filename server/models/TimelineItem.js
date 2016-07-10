@@ -6,11 +6,11 @@ const Model = require('objection').Model;
  * @class TimelineItem
  * @extends {Model}
  */
-var TimelineItem = function() {
+function TimelineItem() {
 	Model.apply(this, arguments);
-	super.call(this);
 }
 
+// instead of calling super.call we use the built-in Model.extend funciton provided by objection
 Model.extend(TimelineItem);
 
 TimelineItem.tableName = 'timelineItems';
