@@ -57,7 +57,7 @@ module.exports = function(app) {
 		var now = new Date().toISOString()
 		, token = req.body.token;
 		// need to make sure we're logging out the right user, who is currently logged in
-		if(AuthHelper.authenticateUser(token) && !(AuthHelper.isAdmin(token))){
+		if(token && AuthHelper.authenticateUser(token) && !(AuthHelper.isAdmin(token))){
 			Blacklist.delete()
 			.where('token', '=', token)
 			.then((numberOfRowsDeleted) => {
