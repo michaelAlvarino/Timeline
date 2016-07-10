@@ -7,7 +7,7 @@ const express		= require('express');
 const path			= require('path');
 const morgan		= require('morgan');
 const bodyParser	= require('body-parser');
-const knexConfig	= require('./knexfile.js');
+const knexConfig	= require('../knexfile.js');
 const objection		= require('objection');
 const Knex			= require('knex');
 const Model			= objection.Model;
@@ -24,7 +24,8 @@ var app = express();
 // =============================================
 // connect to the db
 // =============================================
-const knex = Knex(knexConfig.development);
+const env = process.env.NODE_ENV || 'development';
+const knex = Knex(knexConfig[env]);
 Model.knex(knex);
 app.knex = knex;
 
@@ -45,7 +46,9 @@ const port			= 8000;
 // =============================================
 app.use(express.static(static_path));
 app.use(bodyParser.json());
-app.use(morgan('combined'));
+if (env === 'development') {
+    app.use(morgan('combined'));
+}
 
 // =============================================
 // routing
