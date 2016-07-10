@@ -46,6 +46,18 @@ const AuthHelper = {
 
 		return user.userType === 'admin';
 	}
+
+	/**
+	* Returns user id
+	*
+	* @param {string} token A hashed JWT
+	* @return {numeric} user id
+	*/
+	getUserId: (token) => {
+		if(!AuthHelper.authenticateUser(token))
+			return -1;
+		return jwt.decode(token, config.tokenSecretKey).payload.id;
+	}
 };
 
 module.exports = AuthHelper;
