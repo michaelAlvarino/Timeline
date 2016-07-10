@@ -23,18 +23,18 @@ module.exports = function(app){
 		.findById(id).where('enable', '=', 't')
 			.then((data) => {
 				if(!Utils.objectIsEmpty(data) && data.enable === true){
-					res.json({
+					return res.json({
 						success: true,
 						data: data
 					});
 				} else {
-					res.status(404).json({
+					return res.status(404).json({
 						errors: ['timeline not found']
 					});
 				}
 			})
 			.catch((error) => {
-				res.status(404).json({
+				return res.status(404).json({
 					errors: ['timeline not found']
 				});
 			});
@@ -52,13 +52,13 @@ module.exports = function(app){
 		Timeline.query().insertAndFetch(timeline)
 			.then((data) => { 
 				if (data) {
-					res.json(data);
+					return res.json(data);
 				} else {
-					res.status(404).json('timeline creation failed');
+					return res.status(404).json('timeline creation failed');
 				}
 			})
 			.catch((error) => {
-				res.json(error); 
+				return res.json(error); 
 			});
 	});
 
@@ -72,10 +72,10 @@ module.exports = function(app){
 		Timeline.query()
 			.patchAndFetchById(req.params.id, { enable: false })
 			.then((data) => { 
-				res.json('success, timeline disabled'); 
+				return res.json('success, timeline disabled'); 
 			})
 			.catch((error) => { 
-				res.json(error);
+				return res.json(error);
 			});
 	});
 
@@ -84,21 +84,20 @@ module.exports = function(app){
 			id 		= req.params.id;
 
 		if(!AuthHelper.authenticateUser(token)){
-			res.status(403).json({
+			return res.status(403).json({
 				success: false,
-				status: 403,
 				errors: ['Invalid Credentials']
-			})
+			});
 		}
 
 		Timeline.query()
 			.findById(id)
 			.then((timeline) => {
 				var updatedTimeline = Timeline.updateTimeline(timeline, req.body);
-				res.json(updatedTimeline);
+				return res.json(updatedTimeline);
 			})
 			.catch((error) => {
-				res.json(error);
+				return res.json(error);
 			})
 	});
 };
