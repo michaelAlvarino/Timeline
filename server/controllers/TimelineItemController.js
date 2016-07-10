@@ -37,19 +37,60 @@ module.exports = function(app){
 
 		if(token && AuthHelper.authenticateUser(token)){
 			timelineItem = {
-				content: '',
-				title: '',
-				imageUrl: '',
-				userId: 0,
-				status: '',
+				content: timelineItem.content,
+				title: timelineItem.title,
+				imageUrl: timelineItem.imageUrl,
+				userId: AuthHelper.getUserId(token), // how do we get userId from the token?
+				status: timelineItem.status || null,
 				createdDate: dt,
 				updatedDate: dt
 			};
 
-//			TimelineItem.query()
-//			.insertAndFetch
+		}
+	});
+
+	app.put('/api/timelineItem/:id(\\d+)', (req, res) => {
+
+		var token 	= req.body.token,
+		id			= req.params.id,
+		item 		= req.body.item;
+
+		if (!token && !AuthHelper.authenticateUserWithId(id, token) && !AuthHelper.isAdmin(token)) {
+			return res.status(403).json({ 
+				success: false,
+				status: 403,
+				errors: [ 'Invalid credentials' ]  
+			});
 		}
 
-
+		TimlineItem.query()
+		.patchAndFetchById(id, item)
+		.then((data) => {
+			if(data)
+				res.json(data);
+			res.status(404).json({
+				data: null
+			});
+		},
+		(error) => {
+			res.status(500).json({
+				errors: [ error ]
+			})
+		});
 	});
+
+	app.delete('/api/timelineItem/:id(\\d+)', (req, res) => {
+
+		var token 	= req.body.token,
+		id 			= req.params.id;
+
+		if(!AuthHelper.authenticateUser(token) && !AuthHelper.isAdmin(token)){
+
+			return res.status(403).json({
+				succe
+			})
+
+		}
+	});
+
 };
