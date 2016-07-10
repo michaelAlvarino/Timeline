@@ -103,10 +103,25 @@ module.exports = function(app){
 		if(!AuthHelper.authenticateUser(token) && !AuthHelper.isAdmin(token)){
 
 			return res.status(403).json({
-				succe
+				success: false,
+				status: 403,
+				errors: ['Invalid Credentials']
 			})
-
 		}
-	});
 
+		TimelineItem.query()
+		.deleteById(id)
+		.then((data) => {
+			res.json({
+				success: true,
+				data: data // should be # deleted rows (1)
+			})
+		},
+		(error) => {
+			res.status(500).json({
+				success: false,
+				error: [error]
+			});
+		});
+	});
 };
