@@ -11,10 +11,10 @@ module.exports = {
 			password: config.dbPassword
 		},
 		seeds: {
-			directory: __dirname + '/server/seeds/test'
+			directory: __dirname + '/db/seeds/test'
 		},
 		migrations: {
-			directory: __dirname + '/server/migrations'
+			directory: __dirname + '/db/migrations'
 		}
 	},
 	development: {
@@ -25,7 +25,7 @@ module.exports = {
 			password: config.dbPassword
 		},
 		migrations: {
-			directory: __dirname + '/server/migrations'
+			directory: __dirname + '/db/migrations'
 		}
 	}
 };

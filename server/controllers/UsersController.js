@@ -39,7 +39,7 @@ module.exports = (app, redis, redisClient) => {
 	});
 
 	app.delete('/api/users/:id(\\d+)', (req, res) => {
-		var token = req.header.token,
+		var token = req.body.timelinetoken || req.header.timelinetoken,
 			id = req.params.id;
 
 		if (!AuthHelper.authenticateUserWithId(id, token)) {
