@@ -45,7 +45,7 @@ const AuthHelper = {
 		var user = jwt.decode(token, { complete: true }).payload;
 
 		return user.userType === 'admin';
-	}
+	},
 
 	/**
 	* Returns user id
