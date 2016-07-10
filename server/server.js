@@ -11,17 +11,28 @@ const knexConfig	= require('./knexfile.js');
 const objection		= require('objection');
 const Knex			= require('knex');
 const Model			= objection.Model;
+const redis			= require("redis");
+const redisClient	= redis.createClient();
+const bluebird		= require('bluebird');
+const Utils			= require('./helpers/Utils');
+
+// =============================================
+// create the app
+// =============================================
+var app = express();
 
 // =============================================
 // connect to the db
 // =============================================
 const knex = Knex(knexConfig.development);
 Model.knex(knex);
+app.knex = knex;
 
 // =============================================
-// create the app
+// connect to redis
 // =============================================
-var app = express();
+bluebird.promisifyAll(redis.RedisClient.prototype);
+bluebird.promisifyAll(redis.Multi.prototype);
 
 // =============================================
 // configuration
@@ -43,10 +54,10 @@ app.get('/', (req,res) => {
 	res.sendFile(path.normalize(static_path + '/index.html'));
 });
 
-require('./controllers/UsersController')(app);
-require('./controllers/TimelinesController')(app);
-require('./controllers/AuthenticationController')(app);
-require('./controllers/TimelineItemController')(app);
+require('./controllers/UsersController')(app, redis, redisClient);
+require('./controllers/TimelinesController')(app, redis, redisClient);
+require('./controllers/AuthenticationController')(app, redis, redisClient);
+require('./controllers/TimelineItemController')(app, redis, redisClient);
 
 // =============================================
 // run the app

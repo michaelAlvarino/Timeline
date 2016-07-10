@@ -4,7 +4,7 @@
 const User			= require('./../models/User');
 const AuthHelper	= require('./../helpers/AuthHelper');
 
-module.exports = (app) => {
+module.exports = (app, redis, redisClient) => {
 	app.get('/api/users/:id(\\d+)', (req, res) => {
 		var id = req.params.id;
 		User.query()
@@ -106,25 +106,33 @@ module.exports = (app) => {
 			});
 	});
 
-	app.post('/api/users/test', (req, res) => {
+	app.get('/api/users/test', (req, res) => {
 		var email = req.body.email;
 
-		User.testUniqueEmail(email)
-			.then((data) => {
-				console.log('Being fulfilled!', data);
+		redisClient.set('testKey', 'testValue', redis.print);
 
-				return res.json({
-					status: 200, 
-					data: data,
-					success: true
+		redisClient.getAsync('potatoCannon')
+			.then((data) => {
+				if (data === null) {
+					return res.status(404).json({
+						status: 404,
+						success: false,
+						errors: ['Key not set']
+					});
+
+				}
+
+				return res.status(200).json({
+					status: 200,
+					success: true,
+					data: data
 				});
 			})
-			.catch((data) => {
-				console.log('Being rejected!');
-				return res.json({
-					status: 200, 
-					data: data,
-					success: false
+			.catch((err) => {
+				return res.status(500).json({
+					status: 500,
+					success: false,
+					errors: err
 				});
 			});
 	});
