@@ -45,8 +45,8 @@ describe('TimelineController', () => {
 					res.should.have.status(200);
 					res.should.be.json;
 
-					//res.body.should.have.property('id');
-					//res.body.id.should.equal(3);
+					res.body.should.have.property('id');
+					res.body.id.should.equal(3);
 
 					res.body.should.have.property('name');
 					res.body.name.should.equal('Hogwarts');
@@ -59,25 +59,34 @@ describe('TimelineController', () => {
 	describe('GET', () => {
 		it('should return an error', (done) => {
 			chai.request(server)
-				.get('/api/timeline/127512347034')
+				// getting a postgres error here when I use
+				// the same number as in test-user-controller
+				// instead use the max signed 32 bit integer
+				.get('/api/timelines/2147483647')
 				.end((err, res) => {
 					res.should.not.have.status(200);
+					res.should.have.status(404);
+					res.body.should.have.property('errors');
+					res.body.errors[0].should.equal('timeline not found');
 					done();
 				});
 		});
 
 		it('should return a single timeline', (done) => {
 			chai.request(server)
-				.get('/api/users/2')
+				.get('/api/timelines/1')
 				.end((err, res) => {
 					res.should.have.status(200);
 					res.should.be.json;
-					
-					res.body.should.have.property('email');
-					res.body.email.should.equal('draco.malfoy@hogwarts.edu');
 
-					res.body.should.have.property('id');
-					res.body.id.should.equal(2);
+					res.body.should.have.property('success');
+					res.body.success.should.equal(true);
+					
+					res.body.data.should.have.property('name');
+					res.body.data.name.should.equal('Beauxbatons');
+
+					res.body.data.should.have.property('id');
+					res.body.data.id.should.equal(1);
 
 					done();
 				});

@@ -1,8 +1,9 @@
 'use strict';
 /* globals module, require */
 
-const Timeline = require('./../models/Timeline.js');
-const AuthHelper = require('../helpers/AuthHelper.js');
+const Timeline 		= require('./../models/Timeline.js');
+const AuthHelper 	= require('../helpers/AuthHelper.js');
+const Utils 		= require('../helpers/Utils.js');
 
 module.exports = function(app){
 
@@ -18,16 +19,24 @@ module.exports = function(app){
 
 		var id = req.params.id;
 
-		Timeline.query().findById(id).where('enable', '=', 't')
+		Timeline.query()
+		.findById(id).where('enable', '=', 't')
 			.then((data) => {
-				if (data.enable) {
-					res.json(data);
+				if(!Utils.objectIsEmpty(data) && data.enable === true){
+					res.json({
+						success: true,
+						data: data
+					});
 				} else {
-					res.status(404).json('timeline does not exist');
+					res.status(404).json({
+						errors: ['timeline not found']
+					});
 				}
 			})
 			.catch((error) => {
-				res.json(error);
+				res.status(404).json({
+					errors: ['timeline not found']
+				});
 			});
 	});
 

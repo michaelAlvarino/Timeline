@@ -32,6 +32,16 @@ const Utils = {
 		var files = fs.readdirSync(path);
 
 		filter(files);
+	},
+
+	/**
+	* Determine if json object is empty
+	*
+	* @param	{Object}	object	Object to test for emptiness
+	* @return	{Boolean}	true - object is empty false - object contains data
+	*/
+	objectIsEmpty: (object) => {
+		return !Object.keys(object).length;
 	}
 };
 
