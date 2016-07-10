@@ -19,12 +19,12 @@ TimelineItem.jsonSchema = {
 	type: 'object',
 	required: ['timelineId', 'title', 'content', 'userId', 'createdDate', 'updatedDate'],
 	properties:{
-		id: {type: 'number'},
-		timelineId: {type: 'number'},
+		id: {type: 'integer'},
+		timelineId: {type: 'integer'},
 		// is text the correct type?
 		// From what I can see it'll still be string?
 		// https://spacetelescope.github.io/understanding-json-schema/reference/type.html
-		// you mean the two id columns right? if they're id's then won't they be numbers rather than strings?
+		// you mean the two id columns right? why would those be stored as strings?
 		content: {type: 'string'}
 	}
 };
