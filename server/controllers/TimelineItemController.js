@@ -47,6 +47,22 @@ module.exports = function(app){
 			};
 
 		}
+
+		TimelineItem.query()
+		.insertAndFetch(timelineItem)
+		.then((data) => {
+			if(data)
+				res.status(201).json(data);
+			// query was successful, but didn't return anything
+			res.status(404).json({
+				error: ['Item Not Found']
+			})
+		},
+		(errors) => {
+			res.status(500).json({
+				error: [errors]
+			});
+		});
 	});
 
 	app.put('/api/timelineItem/:id(\\d+)', (req, res) => {
