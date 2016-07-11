@@ -19,5 +19,16 @@ exports.seed = (knex, Promise) => {
 				createdDate: (new Date(1980, 4, 5)).toISOString(),
 				updatedDate: (new Date()).toISOString()			
 			})
+		}).then(() => {
+			return knex('timelineItems').insert({
+				title: 'Battle of Hogwarts',
+				content: 'some content',
+				imageUrl: '//rocky.balboa',
+				status: null,
+				timelineId: 2,
+				userId: 1,
+				createdDate: (new Date(1991, 6, 31)).toISOString(),
+				updatedDate: (new Date()).toISOString()
+			});
 		})
 };

@@ -2,8 +2,7 @@
 'use strict';
 
 exports.seed = (knex, Promise) => {
-	// Deletes ALL existing entries
-	return knex('timelineItem').del()
+/*	return knex('timelineItem').del()
 		.then(() => {
 			return knex('timelineItem').insert({
 				title: 'Battle of Hogwarts',
@@ -14,5 +13,5 @@ exports.seed = (knex, Promise) => {
 				createdDate: (new Date(1991, 6, 31)).toISOString(),
 				updatedDate: (new Date()).toISOString()
 			});
-		});
+		});*/
 };
