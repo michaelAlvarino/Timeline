@@ -13,14 +13,21 @@ module.exports = function(app){
 		TimelineItem.query()
 			.findById(id)
 			.then((data) => {
-				res.json({
-					success: true,
+				if (data) {
+					return res.json({
+						success: true,
+						data: data
+					});
+				}
+				
+				return res.status(404).json({
+					success: false,
 					data: data,
-					message: null
-				});
+					message: 'TimelineItem not found'
+				})
 			})
 			.catch((error) => {
-				res.json({
+				res.status(500).json({
 					success: false,
 					data: null,
 					message: error
