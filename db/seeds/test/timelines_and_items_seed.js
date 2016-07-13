@@ -19,7 +19,8 @@ exports.seed = (knex, Promise) => {
 				createdDate: (new Date(1980, 4, 5)).toISOString(),
 				updatedDate: (new Date()).toISOString()			
 			})
-		}).then(() => {
+		})
+		.then(() => {
 			return knex('timelineItems').insert({
 				title: 'Battle of Hogwarts',
 				content: 'some content',
