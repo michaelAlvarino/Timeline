@@ -23,7 +23,7 @@ exports.seed = (knex, Promise) => {
 			return knex('timelineItems').insert({
 				title: 'Battle of Hogwarts',
 				content: 'some content',
-				imageUrl: '//rocky.balboa',
+				imageUrl: '//prof.umbridge',
 				status: null,
 				timelineId: 2,
 				userId: 1,
