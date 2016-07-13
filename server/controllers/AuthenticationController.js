@@ -12,29 +12,17 @@ module.exports = function(app) {
 
 		User.findByCredentials(email, password)
 			.then((token) => {
-				var defaultExpirationTimeInDays = 10;
-				// only split it into two lines for legibility.. though i'm honestly not sure how to make it
-				// one "self referencing" line. also the defaultExpirationtime variable is only used here
-				// and may be useless
-				var expiryDate = new Date();
-				expiryDate = expiryDate.setUTCDate(expiryDate.getUTCDate() + defaultExpirationTimeInDays)
-				// add token to blacklist table
-				Blacklist.query()
-				.insertAndFetch({token: token,
-					expirationDate: expiryDate.toISOString()})
-				.then((data) => {
-					res.json({
-						success: true,
-						token: token
-					});
-				})
-				.catch((errors) => {
-					res.json({success: false, message: errors})
-				})
-
+				return res.json({
+					success: true,
+					status: 200,
+					data: token
+				});
 			})
 			.catch((errors) => {
-				res.status(403).json({success: false, message: errors});
+				return res.status(403).json({
+					success: false, 
+					message: errors
+				});
 			});
 	});
 
@@ -53,23 +41,34 @@ module.exports = function(app) {
 		|------------------|
 
 	 */
-	app.post('/api/logout', (req, res) => {
-		var now = new Date().toISOString()
-		, token = req.body.token;
+	app.delete('/api/logout', (req, res) => {
+		var token = req.headers.timelinetoken || req.body.timelinetoken,
+			id = req.body.id; // TODO: Temporary fix to logout a specific user
+
 		// need to make sure we're logging out the right user, who is currently logged in
-		if(token && AuthHelper.authenticateUser(token) && !(AuthHelper.isAdmin(token))){
-			Blacklist.delete()
-			.where('token', '=', token)
-			.then((numberOfRowsDeleted) => {
-				res.json({
-					success: true,
-					message: 'successfully logged out'
-				});
-			})
-			.catch((errors) => {
-				res.status(403).json({success: false, message: errors});
-			})
+		// OR maybe we don't care? Worst case is bad UX where the user has to re-login
+		if(AuthHelper.authenticateUserWithId(id, token) || AuthHelper.isAdmin(token)){
+			return Blacklist.query()
+				.insertAndFetch(AuthHelper.invalidateToken(token))
+				.then((data) => {
+					return res.json({
+						status: 200,
+						success: true,
+						data: {}
+					});
+				})
+				.catch((errors) => {
+					return res.status(400).json({ 
+						success: false, 
+						message: errors
+					});
+				})
+		} else {
+			res.status(403).json({
+				status: 403,
+				success: false,
+				message: 'Invalid credentials'
+			});
 		}
-		// maybe add an else where we handle the case of an admin logging out another user
 	});
 };

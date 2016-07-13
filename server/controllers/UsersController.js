@@ -106,34 +106,32 @@ module.exports = (app, redis, redisClient) => {
 			});
 	});
 
-	app.get('/api/users/test', (req, res) => {
-		var email = req.body.email;
+	app.post('/api/users/test', (req, res) => {
+		// redisClient.set('testKey', 'testValue', redis.print);
 
-		redisClient.set('testKey', 'testValue', redis.print);
+		// redisClient.getAsync('potatoCannon')
+		// 	.then((data) => {
+		// 		if (data === null) {
+		// 			return res.status(404).json({
+		// 				status: 404,
+		// 				success: false,
+		// 				errors: ['Key not set']
+		// 			});
 
-		redisClient.getAsync('potatoCannon')
-			.then((data) => {
-				if (data === null) {
-					return res.status(404).json({
-						status: 404,
-						success: false,
-						errors: ['Key not set']
-					});
+		// 		}
 
-				}
-
-				return res.status(200).json({
-					status: 200,
-					success: true,
-					data: data
-				});
-			})
-			.catch((err) => {
-				return res.status(500).json({
-					status: 500,
-					success: false,
-					errors: err
-				});
-			});
+		// 		return res.status(200).json({
+		// 			status: 200,
+		// 			success: true,
+		// 			data: data
+		// 		});
+		// 	})
+		// 	.catch((err) => {
+		// 		return res.status(500).json({
+		// 			status: 500,
+		// 			success: false,
+		// 			errors: err
+		// 		});
+		// 	});
 	});
 };
