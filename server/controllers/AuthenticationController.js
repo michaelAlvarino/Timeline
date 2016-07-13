@@ -14,7 +14,7 @@ module.exports = function(app) {
 		User.findByCredentials(email, password)
 			.then((token) => {
 				var defaultExpirationTimeInDays = 10
-				, expiryDate = new Date().setUTCDate(expiryDate.getUTCDate() + defaultExpirationTimeInDays);
+				, expiryDate = new Date().setUTCDate(expiryDate.getUTCDate() + defaultExpirationTimeInDays)
 				, verify = AuthHelper.authenticateUser(token.token);
 
 				Blacklist.query()
