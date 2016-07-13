@@ -13,17 +13,21 @@ module.exports = function(app){
 		TimelineItem.query()
 			.findById(id)
 			.then((data) => {
-				res.json({
-					success: true,
-					data: data,
-					message: null
+				if(data)
+					return res.json({
+						success: true,
+						data: data,
+						message: null
+					});
+				return res.status(404).json({
+					success: false,
+					errors: ['timeline item not found']
 				});
 			})
-			.catch((error) => {
-				res.json({
+			.catch((errors) => {
+				return res.status(500).json({
 					success: false,
-					data: null,
-					message: error
+					errors: [errors]
 				});
 			});
 	});
@@ -51,15 +55,17 @@ module.exports = function(app){
 		TimelineItem.query()
 		.insertAndFetch(timelineItem)
 		.then((data) => {
+			console.log(data);
 			if(data)
-				res.status(201).json(data);
+				return res.status(200).json(data);
 			// query was successful, but didn't return anything
-			res.status(404).json({
+			return res.status(404).json({
+				success: false,
 				error: ['Item Not Found']
 			})
 		},
 		(errors) => {
-			res.status(500).json({
+			return res.status(500).json({
 				error: [errors]
 			});
 		});

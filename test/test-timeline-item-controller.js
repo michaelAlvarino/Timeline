@@ -33,13 +33,13 @@ describe('TimelineItemController', () => {
 			});
 	});
 
-/*	describe('POST', () => {
+	describe('POST', () => {
 		it('should save a timeline item to the database', (done) => {
 			var dt = new Date().toISOString();
 			chai.request(server)
 				.post('/api/timelineItem/create')
 				.send({
-					timelineId: 3,
+					timelineId: 1,
 					content: 'Salazar Slytherin disagreed with the other Hogwarts founders about the importance of blood purity and the acceptance of Muggle-borns at Hogwarts School of Witchcraft and Wizardry, As the other Founders were against him in this matter, he left the school. According to legend, before he left, he created a secret chamber deep underground in Hogwarts Castle - known as the Chamber of Secrets.',
 					title: 'Creation of The Chamber of Secrets',
 					imageUrl: '//a.snek.jpg/',
@@ -53,7 +53,7 @@ describe('TimelineItemController', () => {
 					res.should.be.json;
 
 					res.body.should.have.property('id');
-					res.body.id.should.equal(1);
+					res.body.id.should.equal(2);
 
 					res.body.should.have.property('content');
 
@@ -63,7 +63,7 @@ describe('TimelineItemController', () => {
 					done();
 				})
 		});
-	});*/
+	});
 
 	describe('GET', () => {
 		it('should return an error', (done) => {

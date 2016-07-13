@@ -4,6 +4,7 @@
 const User = require('./../models/User.js');
 const Blacklist = require('./../models/Blacklist.js');
 const AuthHelper = require('../helpers/AuthHelper.js');
+const Utils = require('../helpers/Utils.js');
 
 module.exports = function(app) {
 	app.post('/api/login', (req, res) => {
@@ -12,29 +13,41 @@ module.exports = function(app) {
 
 		User.findByCredentials(email, password)
 			.then((token) => {
-				var defaultExpirationTimeInDays = 10;
-				// only split it into two lines for legibility.. though i'm honestly not sure how to make it
-				// one "self referencing" line. also the defaultExpirationtime variable is only used here
-				// and may be useless
-				var expiryDate = new Date();
-				expiryDate = expiryDate.setUTCDate(expiryDate.getUTCDate() + defaultExpirationTimeInDays)
-				// add token to blacklist table
+				var defaultExpirationTimeInDays = 10
+				, expiryDate = new Date().setUTCDate(expiryDate.getUTCDate() + defaultExpirationTimeInDays);
+				, verify = AuthHelper.authenticateUser(token.token);
+
 				Blacklist.query()
-				.insertAndFetch({token: token,
-					expirationDate: expiryDate.toISOString()})
+				.where('token', '=', token)
+				//.insertAndFetch({token: token,
+				//	expirationDate: expiryDate.toISOString()})
 				.then((data) => {
-					res.json({
-						success: true,
-						token: token
-					});
+					// if the query returns nothing (they're not blacklisted)
+					// and we can authenticate their token... respond successfully
+					if(Utils.objectIsEmpty(data) && verify){
+						return res.json({
+							success: true,
+							data: token
+						});
+					} else if(verify){
+						// they were verified, but blacklisted with current token
+						// either they were blacklisted or we failed to authenticate their user						
+						return res.json({
+							success: true,
+							errors: ['log in failed']
+						});
+					}
 				})
 				.catch((errors) => {
-					res.json({success: false, message: errors})
+					return res.json({
+						success: false, 
+						errors: [errors]})
 				})
-
 			})
 			.catch((errors) => {
-				res.status(403).json({success: false, message: errors});
+				return res.status(403).json({
+					success: false, 
+					errors: [errors]});
 			});
 	});
 
@@ -58,17 +71,19 @@ module.exports = function(app) {
 		, token = req.body.token;
 		// need to make sure we're logging out the right user, who is currently logged in
 		if(token && AuthHelper.authenticateUser(token) && !(AuthHelper.isAdmin(token))){
-			Blacklist.delete()
-			.where('token', '=', token)
-			.then((numberOfRowsDeleted) => {
-				res.json({
+			Blacklist.insertAndFetch(token) // maybe just insert here?
+			.then((data) => {
+				return res.json({
 					success: true,
-					message: 'successfully logged out'
+					data: 'successfully logged out'
 				});
 			})
 			.catch((errors) => {
-				res.status(403).json({success: false, message: errors});
-			})
+				return res.status(403).json({
+					success: false, 
+					errors: [errors]
+				});
+			});
 		}
 		// maybe add an else where we handle the case of an admin logging out another user
 	});

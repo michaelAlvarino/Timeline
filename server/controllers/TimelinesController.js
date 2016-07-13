@@ -22,7 +22,7 @@ module.exports = function(app){
 		Timeline.query()
 		.findById(id).where('enable', '=', 't')
 			.then((data) => {
-				if(!Utils.objectIsEmpty(data) && data.enable === true){
+				if(data && data.enable === true){
 					return res.json({
 						success: true,
 						data: data
