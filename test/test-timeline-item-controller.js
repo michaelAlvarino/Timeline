@@ -75,8 +75,8 @@ describe('TimelineItemController', () => {
 				.end((err, res) => {
 					res.should.not.have.status(200);
 					res.should.have.status(404);
-					res.body.should.have.property('errors');
-					res.body.errors[0].should.equal('timeline item not found');
+					res.body.should.have.property('message');
+					res.body.message.should.equal('TimelineItem not found');
 					done();
 				});
 		});

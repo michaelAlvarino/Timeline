@@ -6,7 +6,7 @@ const Blacklist = require('./../models/Blacklist.js');
 const AuthHelper = require('../helpers/AuthHelper.js');
 const Utils = require('../helpers/Utils.js');
 
-module.exports = function(app) {
+module.exports = function(app, redis, redisClient) {
 	app.post('/api/login', (req, res) => {
 		var email		= req.body.email,
 			password	= req.body.password;
@@ -47,7 +47,8 @@ module.exports = function(app) {
 			.catch((errors) => {
 				return res.status(403).json({
 					success: false, 
-					errors: [errors]});
+					errors: [errors]
+				});
 			});
 	});
 
@@ -66,9 +67,10 @@ module.exports = function(app) {
 		|------------------|
 
 	 */
-	app.post('/api/logout', (req, res) => {
-		var now = new Date().toISOString()
-		, token = req.body.token;
+	app.delete('/api/logout', (req, res) => {
+		var token = req.headers.timelinetoken || req.body.timelinetoken,
+			id = req.body.id; // TODO: Temporary fix to logout a specific user
+
 		// need to make sure we're logging out the right user, who is currently logged in
 		if(token && AuthHelper.authenticateUser(token) && !(AuthHelper.isAdmin(token))){
 			Blacklist.insertAndFetch(token) // maybe just insert here?
@@ -85,6 +87,5 @@ module.exports = function(app) {
 				});
 			});
 		}
-		// maybe add an else where we handle the case of an admin logging out another user
 	});
 };

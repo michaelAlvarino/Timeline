@@ -1,10 +1,11 @@
 'use strict';
 /* globals module, require */
 
-const jwt		= require('jsonwebtoken');
-const config	= require('../../config');
-const bcrypt	= require('bcrypt');
-const model		= require('objection').Model;
+const jwt			= require('jsonwebtoken');
+const config		= require('../../config');
+const bcrypt		= require('bcrypt');
+const model			= require('objection').Model;
+const AuthHelper	= require('../helpers/AuthHelper');
 
 /* start region private variables */
 var emailRegex = new RegExp(/^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i);
@@ -136,18 +137,18 @@ class User extends model {
 			.then((users) => {
 				return new Promise((fulfill, reject) => {
 					if (users.length === 1 && _hasCorrectPassword(password, users[0].passwordDigest)) {
-						var token = jwt.sign({
-								id: users[0].id,
-								userType: users[0].userType
-							}, 
-							config.tokenSecretKey,
-							{
-							expiresIn: '1 day'
+						var token = AuthHelper.generateJWT({
+							id: users[0].id,
+							userType: users[0].userType
 						});
 
 						fulfill(token);
 					} else {
-						reject('Invalid credentials');
+						reject({
+							status: 403,
+							success: false,
+							errors: [ 'Invalid credentials' ]
+						});
 					}
 				});
 			})
