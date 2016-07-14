@@ -107,6 +107,14 @@ module.exports = (app, redis, redisClient) => {
 	});
 
 	app.post('/api/users/test', (req, res) => {
+		var token = req.body.timelinetoken || req.headers.timelinetoken;
+		AuthHelper.verifyToken(token)
+			.then((data) => {
+				return res.json(data);
+			})
+			.catch((err) => {
+				return res.status(400).json(err);
+			})
 		// redisClient.set('testKey', 'testValue', redis.print);
 
 		// redisClient.getAsync('potatoCannon')

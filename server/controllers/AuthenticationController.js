@@ -5,7 +5,7 @@ const User = require('./../models/User.js');
 const Blacklist = require('./../models/Blacklist.js');
 const AuthHelper = require('../helpers/AuthHelper.js');
 
-module.exports = function(app) {
+module.exports = function(app, redis, redisClient) {
 	app.post('/api/login', (req, res) => {
 		var email		= req.body.email,
 			password	= req.body.password;
@@ -48,6 +48,18 @@ module.exports = function(app) {
 		// need to make sure we're logging out the right user, who is currently logged in
 		// OR maybe we don't care? Worst case is bad UX where the user has to re-login
 		if(AuthHelper.authenticateUserWithId(id, token) || AuthHelper.isAdmin(token)){
+			// var invalidTokenData = AuthHelper.invalidateToken(token);
+			// var secondsToExpire = Date.parse(invalidTokenData.expirationDate) - Date.now();
+			// if (expireDate > 0) {
+			// 	redisClient.set(token);
+			// 	redisClient.expireat(token, secondsToExpire);
+			// }
+
+			// return res.json({
+			// 	success: true,
+			// 	status: 204
+			// })
+
 			return Blacklist.query()
 				.insertAndFetch(AuthHelper.invalidateToken(token))
 				.then((data) => {

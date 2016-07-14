@@ -3,6 +3,7 @@
 
 const jwt		= require('jsonwebtoken');
 const config	= require('../../config');
+const Blacklist = require('../models/Blacklist');
 
 const defaultExpirationTimeInDays = 10;
 const defaultExpirationTimeInWords = defaultExpirationTimeInDays + ' days';
@@ -11,6 +12,46 @@ const defaultExpirationTimeInWords = defaultExpirationTimeInDays + ' days';
  * @module AuthHelper
  */
 const AuthHelper = {
+	/**
+	 * Checks that a user has a signed JSON Web Token that is not in the TokenBlacklist
+	 * 
+	 * @param	{strring}	token	JSON Web Token
+	 * @return	{Promise}
+	 */
+	verifyToken: (token) => {
+		if (typeof token !== 'string') {
+			throw 'Token must be a string';
+		}
+
+		// TODO: Update this to use Redis instead of the DB
+		// redisClient.get(token)
+		// 	.then((data) => {
+		// 		if (data)
+		// 			return true;
+		// 		else
+		// 			return false;
+		// 	})
+		// 	.catch((err) => {
+		// 		return 'Error connecting to Redis server';
+		// 	})
+		return Blacklist.query()
+			.where('token', token)
+			.then((token) => {
+				return new Promise((fulfill, reject) => {
+					if (token.length > 0) {	
+						reject(false);
+					} else {
+						fulfill(true);
+					}	
+				})
+			})
+			.catch((err) => {
+				return new Promise((fulfill, reject) => {
+					reject(err);
+				});
+			})
+	},
+
 	/**
 	 * Check that the user has a signed JSON Web Token
 	 * 
@@ -117,7 +158,6 @@ const AuthHelper = {
 
 	invalidateToken: (token) => {
 		var decoded = jwt.decode(token, config.tokenSecretKey);
-		console.log(decoded);
 		var	expirationDate = new Date(decoded.exp);
 
 		return {
