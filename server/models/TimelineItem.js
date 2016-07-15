@@ -25,7 +25,11 @@ TimelineItem.jsonSchema = {
 		// From what I can see it'll still be string?
 		// https://spacetelescope.github.io/understanding-json-schema/reference/type.html
 		// you mean the two id columns right? why would those be stored as strings?
-		content: {type: 'string'}
+		title: {type: 'string'},
+		content: {type: 'string'},
+		userId: {type: 'integer'},
+		createdDate: {type: 'string', format: 'date-time'},
+		updatedDate: {type: 'string', format: 'date-time'}
 	}
 };
 
