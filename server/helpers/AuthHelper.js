@@ -100,7 +100,8 @@ const AuthHelper = {
 	getUserId: (token) => {
 		if(!AuthHelper.authenticateUser(token))
 			return -1;
-		return jwt.decode(token, config.tokenSecretKey).payload.id;
+		
+		return jwt.decode(token, config.tokenSecretKey).id;
 	},
 
 	/**
