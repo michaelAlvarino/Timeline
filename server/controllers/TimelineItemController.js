@@ -33,29 +33,26 @@ module.exports = function(app){
 	});
 
 	app.post('/api/timelineItem/create', (req, res) =>{
-
 		var dt = new Date().toISOString(),
-			token = req.body.token,
-			timelineItem;
-
+			token = (req.body.timelinetoken || req.headers.timelinetoken),
+			timelineItem = null;
 
 		if(token && AuthHelper.authenticateUser(token)){
 			timelineItem = {
-				content: timelineItem.content,
-				title: timelineItem.title,
-				imageUrl: timelineItem.imageUrl,
+				timelineId: req.body.timelineId,
+				content: req.body.content,
+				title: req.body.title,
+				imageUrl: req.body.imageUrl,
 				userId: AuthHelper.getUserId(token), // how do we get userId from the token?
-				status: timelineItem.status || null,
+				status: req.body.status || null,
 				createdDate: dt,
 				updatedDate: dt
 			};
-
 		}
 
 		TimelineItem.query()
 		.insertAndFetch(timelineItem)
 		.then((data) => {
-			console.log(data);
 			if(data)
 				return res.status(200).json(data);
 			// query was successful, but didn't return anything
@@ -65,9 +62,7 @@ module.exports = function(app){
 			})
 		},
 		(errors) => {
-			return res.status(500).json({
-				error: [errors]
-			});
+			return res.status(500).json(errors);
 		});
 	});
 
