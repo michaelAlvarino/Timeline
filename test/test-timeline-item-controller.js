@@ -73,10 +73,11 @@ describe('TimelineItemController', () => {
 				// instead use the max signed 32 bit integer
 				.get('/api/timelineItem/2147483647')
 				.end((err, res) => {
+					console.log(res.body.errors);
 					res.should.not.have.status(200);
 					res.should.have.status(404);
-					res.body.should.have.property('message');
-					res.body.message.should.equal('TimelineItem not found');
+					res.body.should.have.property('errors');
+					res.body.errors[0].should.equal('timeline item not found');
 					done();
 				});
 		});
