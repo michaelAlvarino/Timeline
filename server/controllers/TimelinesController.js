@@ -41,25 +41,39 @@ module.exports = function(app){
 	});
 
 	app.post('/api/timelines/create', (req, res) => {
-		var dt = new Date().toISOString();
-		var timeline = {
+		var dt = new Date().toISOString(),
+		token = (req.body.timelinetoken || req.headers.timelinetoken),
+		timeline = {
 			name: req.body.name,
 			enable: true,
 			createdDate: dt,
 			updatedDate: dt
 		};
 
-		Timeline.query().insertAndFetch(timeline)
-			.then((data) => { 
-				if (data) {
-					return res.json(data);
-				} else {
-					return res.status(404).json('timeline creation failed');
-				}
-			})
-			.catch((error) => {
-				return res.json(error); 
-			});
+console.log(AuthHelper.authenticateUser(token))
+		if(token && AuthHelper.authenticateUser(token)){
+			Timeline.query().insertAndFetch(timeline)
+				.then((data) => { 
+					if(data){
+						return res.json(data);
+					}
+
+					return res.status(404).json({
+						success: false,
+						errors: ['Timeline not found']
+					})
+				})
+				.catch((error) => {
+					return res.status(404).json({
+						success: false,
+						errors: error
+					}); 
+				});
+		} else {
+			res.status(500).json({
+				errors: ['Invalid Credentials']
+			}); 
+		}
 	});
 
 	// instead of deleting timelines, just disable them to allow for easy re-addition.

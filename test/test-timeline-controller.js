@@ -3,14 +3,19 @@
 
 process.env.NODE_ENV = 'test';
 
-const chai		= require('chai');
-const chaiHttp	= require('chai-http');
-const server	= require('../server/server');
-const should	= chai.should();
-//const Timeline 	= require('../server/models/Timeline'); unused
-const knex		= server.knex;
+const chai			= require('chai');
+const chaiHttp		= require('chai-http');
+const server		= require('../server/server');
+const AuthHelper 	= require('../server/helpers/AuthHelper.js');
+const should		= chai.should();
+const knex			= server.knex;
 
 chai.use(chaiHttp);
+
+const validToken = AuthHelper.generateJWT({
+	userType: 'admin',
+	id: 1
+});
 
 describe('TimelineController', () => {
 	beforeEach((done) => {
@@ -38,6 +43,7 @@ describe('TimelineController', () => {
 			var dt = new Date().toISOString();
 			chai.request(server)
 				.post('/api/timelines/create')
+				.set('timelineToken', validToken)
 				.send({
 					name: 'Beauxbatons'
 				})
@@ -50,6 +56,25 @@ describe('TimelineController', () => {
 
 					res.body.should.have.property('name');
 					res.body.name.should.equal('Beauxbatons');
+
+					done();
+				})
+		});
+		it('should not save a timeline if the token is not submitted', (done) => {
+			var dt = new Date().toISOString(),
+			invalidToken = null;
+			chai.request(server)
+				.post('/api/timelines/create')
+				.set('timelineToken', invalidToken)
+				.send({
+					name: 'Beauxbatons'
+				})
+				.end((err, res) => {
+					res.should.have.status(500);
+					res.should.be.json;
+
+					res.body.should.have.property('errors');
+					res.body.errors.should.equal(['Beauxbatons']);
 
 					done();
 				})

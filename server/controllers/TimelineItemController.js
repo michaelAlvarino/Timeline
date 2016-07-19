@@ -43,19 +43,19 @@ module.exports = function(app){
 				content: req.body.content,
 				title: req.body.title,
 				imageUrl: req.body.imageUrl,
-				userId: AuthHelper.getUserId(token), // how do we get userId from the token?
+				userId: AuthHelper.getUserId(token), 
 				status: req.body.status || null,
 				createdDate: dt,
 				updatedDate: dt
 			};
 		}
 
+// TODO: this will insert a bunch of nulls when no valid token is input, needs to be fixed
 		TimelineItem.query()
 		.insertAndFetch(timelineItem)
 		.then((data) => {
 			if(data)
 				return res.status(200).json(data);
-			// query was successful, but didn't return anything
 			return res.status(404).json({
 				success: false,
 				error: ['Item Not Found']
