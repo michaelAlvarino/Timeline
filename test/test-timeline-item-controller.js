@@ -109,7 +109,6 @@ describe('TimelineItemController', () => {
 					res.body.success.should.equal(true);
 					
 					res.body.data.should.have.property('title');
-//					res.body.data.name.should.equal('');
 
 					res.body.data.should.have.property('id');
 					res.body.data.id.should.equal(1);
