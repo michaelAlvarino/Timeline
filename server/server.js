@@ -51,6 +51,29 @@ if (env === 'development') {
 }
 
 // =============================================
+// Request / Response hooks
+// =============================================
+app.use((req, res, next) => {
+    var path = req._parsedUrl.path,
+        timelinetoken = req.body.timelinetoken || req.headers.timelinetoken;
+
+    if (['PUT', 'PATCH', 'POST', 'DELETE'].indexOf(req.method) !== -1 || 
+        ['/api/users/test'].indexOf(path) !== -1) {
+        console.log('Request is put, post, patch, delete, or a special route that must be authenticated');
+        console.log('Check for a valid timeline token here');
+        console.log('token: ' + timelinetoken);
+
+        // if (!valid) {
+        //     res.status(403).json({
+        //         status: 403,
+        //         success: false,
+        //         errors: ['Invalid credentials']
+        //     })
+        // }
+    }
+})
+
+// =============================================
 // routing
 // =============================================
 app.get('/', (req,res) => {
