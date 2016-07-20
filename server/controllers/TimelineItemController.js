@@ -35,10 +35,7 @@ module.exports = function(app){
 	app.post('/api/timelineItem/create', (req, res) =>{
 		var dt = new Date().toISOString(),
 			token = (req.body.timelinetoken || req.headers.timelinetoken),
-			timelineItem = null;
-
-		if(token && AuthHelper.authenticateUser(token)){
-			timelineItem = {
+			timelineItem = timelineItem = { // Should abstract this to TimelineItem#valiate or something
 				timelineId: req.body.timelineId,
 				content: req.body.content,
 				title: req.body.title,
@@ -48,22 +45,30 @@ module.exports = function(app){
 				createdDate: dt,
 				updatedDate: dt
 			};
+
+		if(!AuthHelper.authenticateUser(token)){
+			return res.status(403).json({
+				status: 403,
+				success: false,
+				errors: [ 'Invalid credentials' ]
+			})
 		}
 
 // TODO: this will insert a bunch of nulls when no valid token is input, needs to be fixed
+// Set an early return if the token isn't valid
 		TimelineItem.query()
-		.insertAndFetch(timelineItem)
-		.then((data) => {
-			if(data)
-				return res.status(200).json(data);
-			return res.status(404).json({
-				success: false,
-				error: ['Item Not Found']
+			.insertAndFetch(timelineItem)
+			.then((data) => {
+				if(data)
+					return res.status(200).json(data);
+				return res.status(404).json({
+					success: false,
+					error: ['Item Not Found']
+				})
 			})
-		},
-		(errors) => {
-			return res.status(500).json(errors);
-		});
+			.catch((errors) => {
+				return res.status(500).json(errors);
+			});
 	});
 
 	app.put('/api/timelineItem/:id(\\d+)', (req, res) => {
@@ -81,19 +86,21 @@ module.exports = function(app){
 		}
 
 		TimlineItem.query()
-		.patchAndFetchById(id, item)
-		.then((data) => {
-			if(data)
-				res.json(data);
-			res.status(404).json({
-				data: null
-			});
-		},
-		(error) => {
-			res.status(500).json({
-				errors: [ error ]
+			.patchAndFetchById(id, item)
+			.then((data) => {
+				if (data) return res.json(data);
+
+				return res.status(404).json({
+					data: null
+				});
 			})
-		});
+			.catch((error) => {
+				return res.status(500).json({
+					success: false,
+					status: 500,
+					errors: [ error ]
+				})
+			});
 	});
 
 	app.delete('/api/timelineItem/:id(\\d+)', (req, res) => {
@@ -102,7 +109,6 @@ module.exports = function(app){
 		id 			= req.params.id;
 
 		if(!AuthHelper.authenticateUser(token) && !AuthHelper.isAdmin(token)){
-
 			return res.status(403).json({
 				success: false,
 				status: 403,
@@ -111,18 +117,18 @@ module.exports = function(app){
 		}
 
 		TimelineItem.query()
-		.deleteById(id)
-		.then((data) => {
-			res.json({
-				success: true,
-				data: data // should be # deleted rows (1)
+			.deleteById(id)
+			.then((data) => {
+				res.json({
+					success: true,
+					data: data // should be # deleted rows (1)
+				})
 			})
-		},
-		(error) => {
-			res.status(500).json({
-				success: false,
-				error: [error]
+			.catch((error) => {
+				res.status(500).json({
+					success: false,
+					error: [error]
+				});
 			});
-		});
 	});
 };

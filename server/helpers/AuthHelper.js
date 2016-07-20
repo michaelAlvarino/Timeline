@@ -13,6 +13,8 @@ const defaultExpirationTimeInWords = defaultExpirationTimeInDays + ' days';
  */
 const AuthHelper = {
 	/**
+	 * TODO: Need to call this before each authenticate.. method. All these methods will become async
+	 * 		
 	 * Checks that a user has a signed JSON Web Token that is not in the TokenBlacklist
 	 * 
 	 * @param	{strring}	token	JSON Web Token
