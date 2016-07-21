@@ -5,8 +5,6 @@
 // =============================================
 const express		= require('express');
 const path			= require('path');
-const morgan		= require('morgan');
-const bodyParser	= require('body-parser');
 const knexConfig	= require('../knexfile.js');
 const objection		= require('objection');
 const Knex			= require('knex');
@@ -22,10 +20,20 @@ const Utils			= require('./helpers/Utils');
 var app = express();
 
 // =============================================
+// configuration
+// =============================================
+const config = {
+    static_path: path.normalize(__dirname + '/../public'),
+    port: 8000,
+    env: process.env.NODE_ENV || 'development',
+    authPaths: ['/api/timelineItem', '/api/timelines', '/api/users']
+    // maybe add knex here? i don't know if knexConfig[this.env] will work
+}
+
+// =============================================
 // connect to the db
 // =============================================
-const env = process.env.NODE_ENV || 'development';
-const knex = Knex(knexConfig[env]);
+const knex = Knex(knexConfig[config.env]);
 Model.knex(knex);
 app.knex = knex;
 
@@ -36,42 +44,9 @@ bluebird.promisifyAll(redis.RedisClient.prototype);
 bluebird.promisifyAll(redis.Multi.prototype);
 
 // =============================================
-// configuration
-// =============================================
-const static_path	= path.normalize(__dirname + '/../public');
-const port			= 8000;
-
-// =============================================
 // middleware
 // =============================================
-app.use(express.static(static_path));
-app.use(bodyParser.json());
-if (env === 'development') {
-    app.use(morgan('combined'));
-}
-
-// =============================================
-// Request / Response hooks
-// =============================================
-app.use((req, res, next) => {
-    var path = req._parsedUrl.path,
-        timelinetoken = req.body.timelinetoken || req.headers.timelinetoken;
-
-    if (['PUT', 'PATCH', 'POST', 'DELETE'].indexOf(req.method) !== -1 || 
-        ['/api/users/test'].indexOf(path) !== -1) {
-        console.log('Request is put, post, patch, delete, or a special route that must be authenticated');
-        console.log('Check for a valid timeline token here');
-        console.log('token: ' + timelinetoken);
-
-        // if (!valid) {
-        //     res.status(403).json({
-        //         status: 403,
-        //         success: false,
-        //         errors: ['Invalid credentials']
-        //     })
-        // }
-    }
-})
+require('./middleware.js')(app, config);//(app, static_path, env);
 
 // =============================================
 // routing
@@ -88,6 +63,6 @@ require('./controllers/TimelineItemController')(app, redis, redisClient);
 // =============================================
 // run the app
 // =============================================
-app.listen(port);
+app.listen(config.port);
 
 module.exports = app;
