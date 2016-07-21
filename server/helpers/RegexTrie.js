@@ -42,23 +42,20 @@ RegexTrie.prototype.insert = function (pattern) {
 };
 
 /**
- * 
  * @param  {string[]} pathPartitions [description]
- * @return {[type]}                [description]
  */
 RegexTrie.prototype._insert = function (pathPartitions) {
 	var currentNode 		= this.root,
 		pathPartitionLength = pathPartitions.length,
 		index, partition, leaf, regex, matches;
-console.log(pathPartitions);
+
 	for (index = 0; index < pathPartitionLength; index++) {
 		partition 	= pathPartitions[index];
 		regex		= partition.search(regexRegex) !== -1;
 		leaf		= index === pathPartitionLength - 1;
-console.log(partition.match(paramsRegex));
-		// Ehhhhhhh
-		if (regex && (matches = partition.match(paramsRegex))) {
-			console.log(matches);
+		matches 	= partition.match(paramsRegex);
+
+		if (regex && matches !== null) {
 			partition = matches[3];
 		}
 
