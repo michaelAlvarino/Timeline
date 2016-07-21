@@ -27,35 +27,29 @@ module.exports = function(app){
 			.catch((errors) => {
 				return res.status(500).json({
 					success: false,
-					errors: [errors]
+					errors: [errors	]
 				});
 			});
 	});
 
 	app.post('/api/timelineItem/create', (req, res) =>{
-		var dt = new Date().toISOString(),
-			token = (req.body.timelinetoken || req.headers.timelinetoken),
-			timelineItem = timelineItem = { // Should abstract this to TimelineItem#valiate or something
-				timelineId: req.body.timelineId,
-				content: req.body.content,
-				title: req.body.title,
-				imageUrl: req.body.imageUrl,
-				userId: AuthHelper.getUserId(token), 
-				status: req.body.status || null,
-				createdDate: dt,
-				updatedDate: dt
-			};
 
-		if(!AuthHelper.authenticateUser(token)){
-			return res.status(403).json({
-				status: 403,
-				success: false,
-				errors: [ 'Invalid credentials' ]
-			})
-		}
+		var dt = new Date().toISOString();
 
-// TODO: this will insert a bunch of nulls when no valid token is input, needs to be fixed
-// Set an early return if the token isn't valid
+		var token = req.body.timelinetoken || req.headers.timelinetoken;
+
+		var timelineItem = { // Should abstract this to TimelineItem#valiate or something
+			content: req.body.content,
+			title: req.body.title,
+			imageUrl: req.body.imageUrl,
+			userId: AuthHelper.getUserId(token), 
+			status: req.body.status || null,
+			createdDate: dt,
+			updatedDate: dt
+		};
+
+		// TODO: this will insert a bunch of nulls when no valid token is input, needs to be fixed
+		// Set an early return if the token isn't valid
 		TimelineItem.query()
 			.insertAndFetch(timelineItem)
 			.then((data) => {
@@ -67,6 +61,7 @@ module.exports = function(app){
 				})
 			})
 			.catch((errors) => {
+				console.log(errors);
 				return res.status(500).json(errors);
 			});
 	});
