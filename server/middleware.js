@@ -9,6 +9,7 @@ module.exports = (app, config) => {
 
     app.use(express.static(config.static_path));
     app.use(bodyParser.json());
+
     if (config.env === 'development') {
         app.use(morgan('combined'));
     }
