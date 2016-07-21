@@ -17,7 +17,7 @@ TimelineItem.tableName = 'timelineItems';
 
 TimelineItem.jsonSchema = {
 	type: 'object',
-	required: ['timelineId', 'title', 'content', 'userId', 'createdDate', 'updatedDate'],
+	required: ['title', 'content', 'userId', 'createdDate', 'updatedDate'],
 	properties:{
 		id: {type: 'integer'},
 		timelineId: {type: 'integer'},
