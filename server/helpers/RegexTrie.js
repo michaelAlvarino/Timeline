@@ -12,7 +12,25 @@ var RegexTrieNode = function (partition, regex, leaf) {
 	this.regex		= regex 	|| false;
 	this.leaf		= leaf 		|| false;
 	this.children	= {};
+	this.regexNodes = {};
 };
+
+RegexTrieNode.prototype.getMatchingRegexNode = function (partition) {
+	var key, currentNode;
+
+	if (this.children.hasOwnProperty(partition)) {
+		return this.children[partition];
+	}
+
+	for (key in this.regexNodes) {
+		currentNode = this.regexNodes[key];
+		if (this.regexNodes.hasOwnProperty(key) && currentNode.partition.exec(partition)) {
+			return currentNode;
+		}
+	}
+
+	return null;
+}
 
 /**
  * @constructor
@@ -47,7 +65,7 @@ RegexTrie.prototype.insert = function (pattern) {
 RegexTrie.prototype._insert = function (pathPartitions) {
 	var currentNode 		= this.root,
 		pathPartitionLength = pathPartitions.length,
-		index, partition, leaf, regex, matches;
+		index, partition, leaf, regex, matches, regexNode;
 
 	for (index = 0; index < pathPartitionLength; index++) {
 		partition 	= pathPartitions[index];
@@ -55,16 +73,43 @@ RegexTrie.prototype._insert = function (pathPartitions) {
 		leaf		= index === pathPartitionLength - 1;
 		matches 	= partition.match(paramsRegex);
 
-		if (regex && matches !== null) {
-			partition = matches[3];
+		if (regex) {
+			if (matches !== null) partition = matches[3];
+
+			partition = new RegExp(partition);
 		}
 
 		if (!currentNode.children.hasOwnProperty(partition)) {
-			currentNode.children[partition] = new RegexTrieNode(partition, regex, leaf);
+			regexNode = new RegexTrieNode(partition, regex, leaf);
+			currentNode.children[partition]  = regexNode;
+
+			if (regex) currentNode.regexNodes[partition] = regexNode;
 		}
 
 		currentNode = currentNode.children[partition];
 	}
 };
+
+/**
+ * @param {string}	path
+ */
+RegexTrie.prototype.match = function (path) {
+	var pathPartitions		= path.split('/'),
+		pathPartitionLength = pathPartitions.length,
+		currentNode			= this.root,
+		index, partition, match;
+
+	for (index = 0; index < pathPartitionLength; index++) {
+		partition = pathPartitions[index];
+
+		currentNode = currentNode.getMatchingRegexNode(partition);
+
+		if (!currentNode) {
+			return false;
+		}
+	}
+
+	return currentNode.leaf;
+}
 
 module.exports = RegexTrie;
