@@ -15,6 +15,12 @@ var RouteTrieNode = function (partition, regex, leaf) {
 	this.regexNodes = {};
 };
 
+/**
+ * Returns a matching RouteNode for a given partition
+ * 
+ * @param	{string}			partition	A string to match
+ * @return	{RouteNode|null}				A RouteNode that matches the partition. Null if no match.
+ */
 RouteTrieNode.prototype.getMatchingRouteNode = function (partition) {
 	var key, currentNode;
 
@@ -60,6 +66,7 @@ RouteTrie.prototype.insert = function (pattern) {
 };
 
 /**
+ * @private
  * @param  {string[]} pathPartitions [description]
  */
 RouteTrie.prototype._insert = function (pathPartitions) {
@@ -91,7 +98,10 @@ RouteTrie.prototype._insert = function (pathPartitions) {
 };
 
 /**
- * @param {string}	path
+ * Returns true if a given path is stored in the RouteTrie
+ * 
+ * @param	{string}	path	A url or path to match
+ * @return	{boolean}			Returns true if a match is found
  */
 RouteTrie.prototype.match = function (path) {
 	var pathPartitions		= path.split('/'),
