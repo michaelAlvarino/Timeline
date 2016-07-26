@@ -7,7 +7,7 @@ const regexRegex 	= /[?^{}()|[\]\\]/;
  * @param {boolean}	regex
  * @param {boolean}	leaf
  */
-var RegexTrieNode = function (partition, regex, leaf) {
+var RouteTrieNode = function (partition, regex, leaf) {
 	this.partition 	= partition || '';
 	this.regex		= regex 	|| false;
 	this.leaf		= leaf 		|| false;
@@ -15,7 +15,7 @@ var RegexTrieNode = function (partition, regex, leaf) {
 	this.regexNodes = {};
 };
 
-RegexTrieNode.prototype.getMatchingRegexNode = function (partition) {
+RouteTrieNode.prototype.getMatchingRouteNode = function (partition) {
 	var key, currentNode;
 
 	if (this.children.hasOwnProperty(partition)) {
@@ -35,8 +35,8 @@ RegexTrieNode.prototype.getMatchingRegexNode = function (partition) {
 /**
  * @constructor
  */
-var RegexTrie = function () {
-	this.root 		= new RegexTrieNode();
+var RouteTrie = function () {
+	this.root 		= new RouteTrieNode();
 	this.patterns 	= {};
 };
 
@@ -44,9 +44,9 @@ var RegexTrie = function () {
  * Inserts a regex pattern into the trie
  * 
  * @param	{string}	pattern	A URL or path
- * @return	{RegexTrie}			Fluent setter
+ * @return	{RouteTrie}			Fluent setter
  */
-RegexTrie.prototype.insert = function (pattern) {
+RouteTrie.prototype.insert = function (pattern) {
 	if (typeof pattern !== 'string') { 
 		throw 'Pattern must be a string!';
 	}
@@ -62,7 +62,7 @@ RegexTrie.prototype.insert = function (pattern) {
 /**
  * @param  {string[]} pathPartitions [description]
  */
-RegexTrie.prototype._insert = function (pathPartitions) {
+RouteTrie.prototype._insert = function (pathPartitions) {
 	var currentNode 		= this.root,
 		pathPartitionLength = pathPartitions.length,
 		index, partition, leaf, regex, matches, regexNode;
@@ -80,7 +80,7 @@ RegexTrie.prototype._insert = function (pathPartitions) {
 		}
 
 		if (!currentNode.children.hasOwnProperty(partition)) {
-			regexNode = new RegexTrieNode(partition, regex, leaf);
+			regexNode = new RouteTrieNode(partition, regex, leaf);
 			currentNode.children[partition]  = regexNode;
 
 			if (regex) currentNode.regexNodes[partition] = regexNode;
@@ -93,7 +93,7 @@ RegexTrie.prototype._insert = function (pathPartitions) {
 /**
  * @param {string}	path
  */
-RegexTrie.prototype.match = function (path) {
+RouteTrie.prototype.match = function (path) {
 	var pathPartitions		= path.split('/'),
 		pathPartitionLength = pathPartitions.length,
 		currentNode			= this.root,
@@ -102,7 +102,7 @@ RegexTrie.prototype.match = function (path) {
 	for (index = 0; index < pathPartitionLength; index++) {
 		partition = pathPartitions[index];
 
-		currentNode = currentNode.getMatchingRegexNode(partition);
+		currentNode = currentNode.getMatchingRouteNode(partition);
 
 		if (!currentNode) {
 			return false;
@@ -112,4 +112,4 @@ RegexTrie.prototype.match = function (path) {
 	return currentNode.leaf;
 }
 
-module.exports = RegexTrie;
+module.exports = RouteTrie;
