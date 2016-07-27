@@ -59,6 +59,8 @@ RouteTrie.prototype.insert = function (pattern) {
 
 	if (!this.patterns.hasOwnProperty(pattern)) {
 		var pathPartitions = pattern.split('/');
+
+		this.patterns[pattern] = true;
 		this._insert(pathPartitions);
 	}
 
