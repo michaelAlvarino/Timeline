@@ -37,8 +37,26 @@ describe('User', () => {
 
         it('should match basic regex', () => {
             var trie    = new RouteTrie(),
+                route   = '/api/users/\\d+',
+                url     = '/api/users/3';
+
+            trie.insert(route);
+            trie.match(url).should.equal(true);
+        });
+
+        it('should match regex with params', () => {
+            var trie    = new RouteTrie(),
                 route   = '/api/users/:id(\\d+)',
                 url     = '/api/users/3';
+
+            trie.insert(route);
+            trie.match(url).should.equal(true);
+        });
+
+        it('should match multiple regex', () => {
+            var trie    = new RouteTrie(),
+                route   = '/api/users/:id(\\d+)/friends/:friendId(\\d+)',
+                url     = '/api/users/3/friends/90';
 
             trie.insert(route);
             trie.match(url).should.equal(true);
