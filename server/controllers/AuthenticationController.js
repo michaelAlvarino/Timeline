@@ -27,7 +27,8 @@ module.exports = function(app, redis, redisClient) {
 					if(Utils.objectIsEmpty(data) && verify){
 						return res.json({
 							success: true,
-							data: token
+							data: token,
+							errors: []
 						});
 					} else if(verify){
 						// they were verified, but blacklisted with current token
