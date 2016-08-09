@@ -17,16 +17,18 @@ module.exports = function(app){
 					return res.json({
 						success: true,
 						data: data,
-						message: null
+						errors: []
 					});
 				return res.status(404).json({
 					success: false,
+					data: null,
 					errors: ['timeline item not found']
 				});
 			})
 			.catch((errors) => {
 				return res.status(500).json({
 					success: false,
+					data: null,
 					errors: [errors	]
 				});
 			});
@@ -54,15 +56,24 @@ module.exports = function(app){
 			.insertAndFetch(timelineItem)
 			.then((data) => {
 				if(data)
-					return res.status(200).json(data);
+					return res.status(200).json({
+						success: true,
+						data: data,
+						errors: []
+					});
 				return res.status(404).json({
 					success: false,
-					error: ['Item Not Found']
+					data: null,
+					errors: ['Item Not Found']
 				})
 			})
 			.catch((errors) => {
 				console.log(errors);
-				return res.status(500).json(errors);
+				return res.status(500).json({
+					success: false,
+					data: null,
+					errors: [errors]
+				});
 			});
 	});
 
@@ -75,7 +86,7 @@ module.exports = function(app){
 		if (!token && !AuthHelper.authenticateUserWithId(id, token) && !AuthHelper.isAdmin(token)) {
 			return res.status(403).json({ 
 				success: false,
-				status: 403,
+				data: null,
 				errors: [ 'Invalid credentials' ]  
 			});
 		}
@@ -83,16 +94,22 @@ module.exports = function(app){
 		TimlineItem.query()
 			.patchAndFetchById(id, item)
 			.then((data) => {
-				if (data) return res.json(data);
+				if (data) return res.json({
+					success: true,
+					data: data,
+					errors: []
+				});
 
 				return res.status(404).json({
-					data: null
+					success: false,
+					data: null,
+					errors: ['404 Not Found']
 				});
 			})
 			.catch((error) => {
 				return res.status(500).json({
 					success: false,
-					status: 500,
+					data: null,
 					errors: [ error ]
 				})
 			});
@@ -106,7 +123,7 @@ module.exports = function(app){
 		if(!AuthHelper.authenticateUser(token) && !AuthHelper.isAdmin(token)){
 			return res.status(403).json({
 				success: false,
-				status: 403,
+				data: null,
 				errors: ['Invalid Credentials']
 			})
 		}
@@ -116,13 +133,15 @@ module.exports = function(app){
 			.then((data) => {
 				res.json({
 					success: true,
-					data: data // should be # deleted rows (1)
+					data: data, // should be # deleted rows (1)
+					errors: []
 				})
 			})
 			.catch((error) => {
 				res.status(500).json({
 					success: false,
-					error: [error]
+					data: null,
+					errors: [error]
 				});
 			});
 	});
