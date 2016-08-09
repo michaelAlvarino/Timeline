@@ -42,6 +42,7 @@ module.exports = function(app, redis, redisClient) {
 				.catch((errors) => {
 					return res.json({
 						success: false, 
+						data: null,
 						errors: [errors]})
 				})
 			})
