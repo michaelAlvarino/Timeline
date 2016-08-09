@@ -80,12 +80,14 @@ module.exports = function(app, redis, redisClient) {
 			.then((data) => {
 				return res.json({
 					success: true,
-					data: 'successfully logged out'
+					data: 'successfully logged out',
+					errors: []
 				});
 			})
 			.catch((errors) => {
 				return res.status(403).json({
 					success: false, 
+					data: null,
 					errors: [errors]
 				});
 			});
