@@ -68,7 +68,6 @@ module.exports = function(app){
 				})
 			})
 			.catch((errors) => {
-				console.log(errors);
 				return res.status(500).json({
 					success: false,
 					data: null,
