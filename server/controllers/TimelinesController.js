@@ -49,31 +49,26 @@ module.exports = function(app){
 			createdDate: dt,
 			updatedDate: dt
 		};
+		Timeline.query().insertAndFetch(timeline)
+			.then((data) => { 
+				if(data){
+					// query was valid and returned data
+					return res.json(data);
+				}
 
-console.log(AuthHelper.authenticateUser(token))
-		if(token && AuthHelper.authenticateUser(token)){
-			Timeline.query().insertAndFetch(timeline)
-				.then((data) => { 
-					if(data){
-						return res.json(data);
-					}
-
-					return res.status(404).json({
-						success: false,
-						errors: ['Timeline not found']
-					})
+				// query returned null
+				return res.status(404).json({
+					success: false,
+					errors: ['Timeline not found']
 				})
-				.catch((error) => {
-					return res.status(404).json({
-						success: false,
-						errors: error
-					}); 
-				});
-		} else {
-			res.status(500).json({
-				errors: ['Invalid Credentials']
-			}); 
-		}
+			})
+			.catch((error) => {
+				// some database level error
+				return res.status(404).json({
+					success: false,
+					errors: error
+				}); 
+			});
 	});
 
 	// instead of deleting timelines, just disable them to allow for easy re-addition.
