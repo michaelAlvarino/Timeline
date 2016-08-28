@@ -20,23 +20,24 @@ module.exports = (app, config) => {
     app.use(config.authPaths, (req, res, next) => {
         var path = req._parsedUrl.path,
             token = req.body.timelinetoken || req.headers.timelinetoken;
-
-        if ((['PUT', 'PATCH', 'POST', 'DELETE'].indexOf(req.method) !== -1 || 
-            ['/api/users/test'].indexOf(path) !== -1)
+        // should require authentication for get requests on user data?
+        if ((['PUT', 'PATCH', 'POST', 'DELETE'].indexOf(req.method) !== -1)
             // shouldn't require login to create a new user
             && req.originalUrl != '/api/users/create') {
 
             // authentication status
-            var authenticated = AuthHelper.authenticateUser(token)
-
+            var authenticated = AuthHelper.authenticateUser(token);
             if (!authenticated) {
-                res.status(403).json({
-                    status: 403,
+                return res.status(403).json({
                     success: false,
                     errors: ['Invalid credentials']
                 })
+            } else if(authenticated){
+                next();
             }
+        } else {
+            next();
         } 
-        next();
+
     })
 }
