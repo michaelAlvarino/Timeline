@@ -61,7 +61,15 @@ const AuthHelper = {
 	 * @return	{boolean}			True if the user has a valid JSON Web Token
 	 */
 	authenticateUser: (token) => {
-		return !!(token && jwt.verify(token, config.tokenSecretKey));
+		var decoded;
+		if(!token)
+			return false;
+		try {
+			decoded = jwt.verify(token, config.tokenSecretKey);
+		} catch(err) {
+			return false;
+		}
+		return !!decoded;
 	},
 
 	/**
