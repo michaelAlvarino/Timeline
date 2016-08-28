@@ -70,11 +70,11 @@ describe('TimelineController', () => {
 					name: 'Beauxbatons'
 				})
 				.end((err, res) => {
-					res.should.have.status(500);
+					res.should.have.status(403);
 					res.should.be.json;
 
 					res.body.should.have.property('errors');
-					res.body.errors.should.equal(['Beauxbatons']);
+					res.body.errors[0].should.equal('Invalid credentials');
 
 					done();
 				})
