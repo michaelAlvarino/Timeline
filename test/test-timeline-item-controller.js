@@ -63,11 +63,11 @@ describe('TimelineItemController', () => {
 					res.should.have.status(200);
 					res.should.be.json;
 
-					res.body.should.have.property('id');
-					res.body.id.should.equal(2);
+					res.body.data.should.have.property('id');
+					res.body.data.id.should.equal(2);
 
-					res.body.should.have.property('content');
-					res.body.content.should.equal(
+					res.body.data.should.have.property('content');
+					res.body.data.content.should.equal(
 						'Salazar Slytherin disagreed with the other Hogwarts founders about the importance of ' + 
 						'blood purity and the acceptance of Muggle-borns at Hogwarts School of Witchcraft and ' + 
 						'Wizardry, As the other Founders were against him in this matter, he left the school. ' + 
