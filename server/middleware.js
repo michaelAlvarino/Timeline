@@ -27,7 +27,7 @@ module.exports = (app, config) => {
 
             // authentication status
             var authenticated = AuthHelper.authenticateUser(token);
-            if (!authenticated) {
+            if (!authenticated /* and they are NOT in the blacklist table */) {
                 return res.status(403).json({
                     success: false,
                     errors: ['Invalid credentials']
