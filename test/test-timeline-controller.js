@@ -1,4 +1,4 @@
-/* globals process, require, describe, it */
+	/* globals process, require, describe, it */
 'use strict';
 
 process.env.NODE_ENV = 'test';

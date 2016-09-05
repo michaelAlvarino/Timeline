@@ -131,6 +131,8 @@ class User extends model {
 			});
 	}
 
+	// should return true false, not a new jwt if it turns out to be false
+	// still return a promise with true or false
 	static findByCredentials (email, password) {
 		return User.query()
 			.where('email', email)
