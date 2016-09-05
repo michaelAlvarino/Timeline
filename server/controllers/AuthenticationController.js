@@ -11,48 +11,48 @@ module.exports = function(app, redis, redisClient) {
 		var email		= req.body.email,
 			password	= req.body.password;
 
-		User.findByCredentials(email, password)
-			.then((token) => {
-				var defaultExpirationTimeInDays = 10
-				, expiryDate = new Date().setUTCDate(expiryDate.getUTCDate() + defaultExpirationTimeInDays)
-				, verify = AuthHelper.authenticateUser(token.token);
+	User.findByCredentials(email, password)
+		.then((token) => {
+			var defaultExpirationTimeInDays = 10
+			, expiryDate = new Date().setUTCDate(expiryDate.getUTCDate() + defaultExpirationTimeInDays)
+			, verify = AuthHelper.authenticateUser(token.token);
 
-				Blacklist.query()
-				.where('token', '=', token)
-				//.insertAndFetch({token: token,
-				//	expirationDate: expiryDate.toISOString()})
-				.then((data) => {
-					// if the query returns nothing (they're not blacklisted)
-					// and we can authenticate their token... respond successfully
-					if(Utils.objectIsEmpty(data) && verify){
-						return res.json({
-							success: true,
-							data: token,
-							errors: []
-						});
-					} else if(verify){
-						// they were verified, but blacklisted with current token
-						// either they were blacklisted or we failed to authenticate their user						
-						return res.json({
-							success: true,
-							errors: ['log in failed']
-						});
-					}
-				})
-				.catch((errors) => {
+			Blacklist.query()
+			.where('token', '=', token)
+			//.insertAndFetch({token: token,
+			//	expirationDate: expiryDate.toISOString()})
+			.then((data) => {
+				// if the query returns nothing (they're not blacklisted)
+				// and we can authenticate their token... respond successfully
+				if(Utils.objectIsEmpty(data) && verify){
 					return res.json({
-						success: false, 
-						data: null,
-						errors: [errors]})
-				})
+						success: true,
+						data: token,
+						errors: []
+					});
+				} else if(verify){
+					// they were verified, but blacklisted with current token
+					// either they were blacklisted or we failed to authenticate their user						
+					return res.json({
+						success: true,
+						errors: ['log in failed']
+					});
+				}
 			})
 			.catch((errors) => {
-				return res.status(403).json({
+				return res.json({
 					success: false, 
 					data: null,
-					errors: [errors]
-				});
+					errors: [errors]})
+			})
+		})
+		.catch((errors) => {
+			return res.status(403).json({
+				success: false, 
+				data: null,
+				errors: [errors]
 			});
+		});
 	});
 
 	/*
