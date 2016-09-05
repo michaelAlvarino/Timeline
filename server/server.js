@@ -46,7 +46,7 @@ bluebird.promisifyAll(redis.Multi.prototype);
 // =============================================
 // middleware
 // =============================================
-require('./middleware.js')(app, config);//(app, static_path, env);
+require('./middleware.js')(app, config, redisClient);//(app, static_path, env);
 
 // =============================================
 // routing

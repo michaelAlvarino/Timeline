@@ -5,7 +5,7 @@ const morgan        = require('morgan');
 const bodyParser    = require('body-parser');
 const AuthHelper    = require('./helpers/AuthHelper');
 
-module.exports = (app, config) => {
+module.exports = (app, config, RedisClient) => {
 
     app.use(express.static(config.static_path));
     app.use(bodyParser.json());
@@ -27,13 +27,27 @@ module.exports = (app, config) => {
 
             // authentication status
             var authenticated = AuthHelper.authenticateUser(token);
-            if (!authenticated /* and they are NOT in the blacklist table */) {
+            // if it's not authenticated or they are in the blacklist...
+            if (!authenticated){// || RedisClient.get(token)) {
                 return res.status(403).json({
                     success: false,
                     errors: ['Invalid credentials']
-                })
+                });
             } else if(authenticated){
-                next();
+                console.log('here');
+                 RedisClient.getAsync(token)
+                .then((results) => {
+                    if(results){
+                        return res.status(403).json({
+                            success: false,
+                            errors: ['Invalid credentials']
+                        })                       
+                    } else {
+                        next();
+                    }
+                })
+                .catch((error) => {
+                })
             }
         } else {
             next();
