@@ -60,6 +60,8 @@ describe('User', () => {
 
             trie.insert(route);
             trie.match(url).should.equal(true);
+            trie.match('/api/users/3/friends').should.equal(false);
+            trie.match('/api/users/3/friends/ninety').should.equal(false);
         });
     });
 });
