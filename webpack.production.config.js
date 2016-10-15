@@ -7,15 +7,15 @@ var WebpackCleanupPlugin = require('webpack-cleanup-plugin');
 
 // local css modules
 loaders.push({
-    test: /[\/\\]public[\/\\].*\.css/,
-    exclude: /node_modules/,
+    test: /[\/\\]src[\/\\].*\.css/,
+    exclude: /(node_modules|public)/,
     loader: ExtractTextPlugin.extract('style', 'css?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]')
 });
 
 // local scss modules
 loaders.push({
-    test: /[\/\\]public[\/\\].*\.scss/,
-    exclude: /node_modules/,
+    test: /[\/\\]src[\/\\].*\.scss/,
+    exclude: /(node_modules|public)/,
     loader: ExtractTextPlugin.extract('style', 'css?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]', 'sass')
 });
 // global css files
@@ -26,7 +26,7 @@ loaders.push({
 
 module.exports = {
     entry: [
-        './public/entry.jsx'
+        './src/entry.jsx'
     ],
     output: {
         path: path.join(__dirname, 'public'),
@@ -58,7 +58,7 @@ module.exports = {
             allChunks: true
         }),
         new HtmlWebpackPlugin({
-            template: './public/index.html'
+            template: './src/template.html'
         }),
         new webpack.optimize.DedupePlugin()
     ]

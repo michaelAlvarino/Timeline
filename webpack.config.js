@@ -8,7 +8,7 @@ const PORT = process.env.PORT || "8888";
 
 // global css
 loaders.push({
-    test: /[\/\\](node_modules|global)[\/\\].*\.css$/,
+    test: /[\/\\](node_modules|public|global)[\/\\].*\.css$/,
     loaders: [
         'style?sourceMap',
         'css'
@@ -16,8 +16,8 @@ loaders.push({
 });
 // local scss modules
 loaders.push({
-    test: /[\/\\]public[\/\\].*\.scss/,
-    exclude: /node_modules/,
+    test: /[\/\\]src[\/\\].*\.scss/,
+    exclude: /(node_modules|public)/,
     loaders: [
         'style?sourceMap',
         'css?modules&importLoaders=1&localIdentName=[path]___[name]__[local]___[hash:base64:5]',
@@ -59,7 +59,7 @@ module.exports = {
         new webpack.NoErrorsPlugin(),
         new webpack.HotModuleReplacementPlugin(),
         new HtmlWebpackPlugin({
-            template: './public/index.html'
+            template: './src/template.html'
         }),
     ]
 };
