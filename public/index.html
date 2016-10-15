@@ -1,78 +1,11 @@
-<DOCTYPE html>
+<!DOCTYPE html>
 <html>
-	<head>
-		<style>
-			body {
-				font-family: sans-serif;
-			}
-			
-			.placeholder {
-				display: block;
-				margin: 0 auto;
-			}
-
-			.placeholder:hover {
-				cursor: pointer;
-			}
-
-			.fullWidth {
-				width: 100%;
-			}
-
-			.modal {
-				position: absolute;
-				left: 30%;
-				top: 30%;
-				margin: 0 auto;
-				background-color: #fff;
-				transition-duration: 500ms;
-				width: 500px;
-				text-align: center;
-				padding: 20px;
-				box-shadow: #000 1px 1px 5px 0;
-				opacity: 1;
-			}
-
-			.modal-hide {
-				top: 10%;
-				opacity: 0;
-				transition-duration: 500ms;
-				z-index: -100;
-			}
-		</style>
-	</head>
-	<body>
-		<div class="fullWidth">
-			<img class="placeholder" 
-				src="http://trampkiwpodrozy.staszewski.pro/wp-content/uploads/2015/12/party.gif" 
-				id="wow"
-				alt="wow">
-		</div>
-
-		<div id="login-modal" class="modal modal-hide">
-			<form>
-				<label>Email</label><br/>
-				<input type="email" placeholder="huge.jackedman@xmen.com"><br/>
-				<br/>
-				<label>Password</label><br/>
-				<input type="password" placeholder="thisisnotapassword1337"><br/>
-				<br/>
-
-				<button id="jk">Login</button>
-				<button id="jk">JK</button>
-			</form>
-		</div>
-
-		<script>
-			var modal = document.getElementById('login-modal');
-
-			document.getElementById('wow').addEventListener('click', function (event) {
-				modal.className = 'modal';
-			});
-
-			document.getElementById('jk').addEventListener('click', function (event) {
-				modal.className = 'modal modal-hide';
-			});
-		</script>
-	</body>
+    <head>
+        <meta charset="utf-8">
+        <title>Timeline</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        <div id="app">Loading...</div>
+    </body>
 </html>
