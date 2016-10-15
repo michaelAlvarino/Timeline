@@ -29,7 +29,7 @@ module.exports = {
     entry: [
         `webpack-dev-server/client?http://${HOST}:${PORT}`,
         'webpack/hot/only-dev-server',
-        './public/entry.jsx'
+        './src/entry.jsx'
     ],
     devtool: process.env.WEBPACK_DEVTOOL || 'cheap-module-source-map',
     output: {
@@ -53,7 +53,13 @@ module.exports = {
         // serve index.html in place of 404 responses to allow HTML5 history
         historyApiFallback: true,
         port: PORT,
-        host: HOST
+        host: HOST,
+        proxy: {
+            '/api': {
+                target: 'http://localhost:8000/',
+                secure: false
+            }
+        }
     },
     plugins: [
         new webpack.NoErrorsPlugin(),
