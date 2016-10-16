@@ -34,7 +34,6 @@ module.exports = (app, config, RedisClient) => {
                     errors: ['Invalid credentials']
                 });
             } else if(authenticated){
-                console.log('here');
                  RedisClient.getAsync(token)
                 .then((results) => {
                     if(results){
