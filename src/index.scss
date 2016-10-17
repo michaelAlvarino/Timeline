@@ -1,7 +1,26 @@
-body {
-    font-family: sans-serif;
-}
+$width: 80%;
+$font-color: #525252;
 
+body {
+    width: 100%;
+    font-family: sans-serif;
+    color: $font-color;
+    display: inline-block;
+
+    .masterWrapper{
+        font-size: 2em;
+        width: $width;
+        margin: auto;
+    }
+
+    .footer{
+        font-size: .4em;
+        position: absolute;
+        bottom: 0px;
+        width: $width;
+    }
+
+}
 .placeholder {
     display: block;
     margin: 0 auto;

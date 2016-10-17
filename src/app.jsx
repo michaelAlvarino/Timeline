@@ -2,6 +2,7 @@ import styles from './index.scss';
 import React from 'react';
 
 import LoginModal from './loginModal.jsx'
+import Footer from './footer.jsx'
 
 class App extends React.Component {
     constructor(props) {
@@ -10,12 +11,12 @@ class App extends React.Component {
 
     render() {
         return (
-            <div>
+            <div className={styles.masterWrapper}>
                 <div>
                     <h1>Welcome to Timeline</h1>
-                    <p>We were inspired to create a website where you could combine your knowledge of history to other's. Add your knowledge, discuss, ask questions, and learn.</p>
                 </div>
                 <LoginModal/>
+                <Footer/>
             </div>
         );
     }
