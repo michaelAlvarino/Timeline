@@ -3,6 +3,7 @@ import React from 'react';
 
 import LoginModal from './loginModal.jsx'
 import Footer from './footer.jsx'
+import Description from './description.jsx'
 
 class App extends React.Component {
     constructor(props) {
@@ -12,9 +13,8 @@ class App extends React.Component {
     render() {
         return (
             <div className={styles.masterWrapper}>
-                <div>
-                    <h1>Welcome to Timeline</h1>
-                </div>
+                <h1>Welcome to Timeline</h1>
+                <Description/>
                 <LoginModal/>
                 <Footer/>
             </div>
