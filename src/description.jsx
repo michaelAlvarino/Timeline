@@ -9,6 +9,7 @@ class Description extends React.Component{
 		return(
 			<div>
 				<p>Welcome to Timeline, where you can create, update, and provide sources for local histories.</p>
+				
 			</div>
 		);
 	}

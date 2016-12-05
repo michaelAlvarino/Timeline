@@ -5,11 +5,11 @@ import {Provider} from 'react-redux'
 import {createStore} from 'redux'
 import reducer from './reducers/reducer.jsx'
 
-let store = createStore(reducer)
+var store = createStore(reducer)
 
 ReactDOM.render(
 	<Provider store={store}>
-	    <App /> 
+	    <App/> 
     </Provider>,
     document.getElementById('app')
 );
