@@ -7,10 +7,16 @@ class Footer extends React.Component {
 	}
 
 	render(){
+		const styles = {
+			"position": "absolute",
+			"bottom": "0"
+		}
 		return(
-			<footer className={styles.footer}>
-				<hr/>
-				<p>Created by Walter Tan and Michael Alvarino</p>
+			<footer className="footer" >
+				<div className="container" style={styles}>
+					<hr/>
+					<p>Created by Walter Tan and Michael Alvarino</p>
+				</div>
 			</footer>
 		);
 	}

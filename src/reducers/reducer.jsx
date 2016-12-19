@@ -38,7 +38,15 @@ const reducer = function(state = {}, action){
 							userId: 1,
 							createdDate: (new Date()).toISOString(),
 							updatedDate: (new Date()).toISOString()
-						}
+						},
+					4: {
+						timelineId: 1,
+						title: "Game Over",
+						content: "Game over, Giants win, tough loss to the Lions who are a pretty good team",
+						userId: 1,
+						createdDate: (new Date()).toISOString(),
+						updatedDate: (new Date()).toISOString()
+					}
 				}
 			}
 		})

@@ -7,7 +7,7 @@ class Description extends React.Component{
 
 	render(){
 		return(
-			<div>
+			<div className="row">
 				<p>Welcome to Timeline, where you can create, update, and provide sources for local histories.</p>
 			</div>
 		);

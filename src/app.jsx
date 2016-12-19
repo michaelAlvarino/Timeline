@@ -14,8 +14,8 @@ class App extends React.Component {
 
     render() {
         return (
-            <div className={styles.masterWrapper}>
-                <h1>Welcome to Timeline</h1>
+            <div className="container">
+                <h1 className="row">Welcome to Timeline</h1>
                 <Description/>
                 <Timeline/>
                 <LoginModal/>
