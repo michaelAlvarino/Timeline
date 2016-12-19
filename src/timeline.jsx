@@ -1,4 +1,5 @@
 import React from 'react'
+import Item from './timelineitem'
 
 class Timeline extends React.Component{
 	constructor(props, context){
@@ -9,18 +10,15 @@ class Timeline extends React.Component{
 	render(){
 		var items = this.state.timeline.items
 		var data = Object.keys(items).map((key)=>{
-			return <Item title={items[key].title} content={items[key].content}/>
+			return <Item key={key.toString()} title={items[key].title} content={items[key].content}/>
 		})
 		return(
-			<div>
+			<div className="container-fluid">
 				{data}
 			</div>
 			);
 	}
 }
-
-// should probably move this out to its own component to add some styles and make it more dynamic
-var Item = (props) =>{ return(<div><h2>{props.title}</h2><p>{props.content}</p></div>)}
 
 Timeline.contextTypes = {
 	store: React.PropTypes.object
