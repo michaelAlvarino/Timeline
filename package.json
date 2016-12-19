@@ -5,8 +5,9 @@
   "main": "server/server.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha --reporter spec",
-    "build": "webpack --config webpack.production.config.js --progress --profile --colors",
-    "start": "webpack-dev-server --progress --profile --colors"
+    "build": "./node_modules/.bin/webpack --config webpack.production.config.js",
+    "start": "webpack-dev-server --progress --profile --colors",
+    "serve": "node ./server/server.js"
   },
   "author": "michael alvarino <michael.alvarino@gmail.com> (http://imbadatcleverurls.blogspot.com/)",
   "license": "ISC",

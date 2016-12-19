@@ -1,8 +1,7 @@
-
-var start = function start(text) {
-  return { type: 'start',
-  			id: 0,
-  			text: text}
+const Actions = { 
+	GetInitialData: function(text) {
+		return { type: "GetInitialData"}
+	}
 }
 
-module.exports = start;
+module.exports = Actions;
