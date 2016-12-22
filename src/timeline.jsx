@@ -5,7 +5,6 @@ class Timeline extends React.Component{
 	// Step 1: Load initial data
 	constructor(props, context){
 		super(props)
-		this.state = context.store.getState()
 	}
 
 	// Step 2: Send request to get server/actual data
@@ -15,13 +14,13 @@ class Timeline extends React.Component{
 	// Step 6: React diffs virtual DOM and applies changes to acutal DOM
 
 	render(){
-		var items = (this.state.TimelineReducer && this.state.TimelineReducer.timeline) || this.state.InitialData.timeline.items
-		var data = Object.keys(items).map((key)=>{
-			return <Item key={key.toString()} title={items[key].title} content={items[key].content}/>
-		})
+		// This seems bad?
+		// This should be in our inital state or something
+		let name = '' || this.props.timeline && this.props.timeline.name;
+
 		return(
 			<div className="container-fluid">
-				{data}
+				{name}
 			</div>
 		)
 	}
