@@ -20,10 +20,10 @@ const Actions = {
 		}
 	},
 	ReceiveTimeline: function(json){
-		return{
+		return {
 			type: "ReceiveTimeline",
-			name,
-			timeline: json.data.children.map(child => child.data),
+			name: json.name,
+			timeline: json,
 			receivedAt: Date.now()
 		}
 	},
@@ -31,6 +31,22 @@ const Actions = {
 	// if i dispatch this function with the id parameter it will return a
 	// promise with which we can dispatch other stuff like receiveTimeline...
 	FetchTimeline: function(id){
+
+		// returns a function
+		return (dispatch) => {
+
+			// dispatches our requesttimeline action
+			dispatch(Actions.RequestTimeline("Durmstrang"))
+
+			return request({
+				url: 'api/timelines/' + id,
+				method: 'get'
+			})
+			.then((response)=>{
+				dispatch(Actions.ReceiveTimeline(response.data))
+			})
+		}
+		/*
 		return new Promise((resolve, reject)=>{
 			request({
 				url: 'localhost:8000/api/timeline/1',
@@ -38,8 +54,7 @@ const Actions = {
 				success: resolve,
 				error: reject
 			})
-
-		})
+		})*/
 	},
 	InvalidateItem: function(itemId){
 		return{

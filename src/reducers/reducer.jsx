@@ -12,12 +12,21 @@ function TimelineReducer(state={}, action){
 				didInvalidate: false
 			})
 		case "ReceiveTimeline":
-			return Object.assign({}, state, {
+
+/*{
+			type: "ReceiveTimeline",
+			name: json.name,
+			timeline: json,
+			receivedAt: Date.now()
+		}*/
+			var x = Object.assign({}, state, {
 				isFetching: false, 
 				didInvalidate: false,
 				timeline: action.timeline,
 				lastUpdated: action.receivedAt
 			})
+			console.log(x)
+			return x
 		default:
 			return state
 	}
