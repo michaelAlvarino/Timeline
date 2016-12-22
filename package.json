@@ -35,6 +35,8 @@
     "react-redux": "^4.4.6",
     "redis": "^2.6.2",
     "redux": "^3.6.0",
+    "redux-thunk": "^2.1.0",
+    "reqwest": "^2.0.5",
     "sass-loader": "^4.0.2"
   },
   "devDependencies": {

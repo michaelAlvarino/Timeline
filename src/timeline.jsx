@@ -4,7 +4,7 @@ import Item from './timelineitem'
 class Timeline extends React.Component{
 	constructor(props, context){
 		super(props)
-		this.state = context.store.getState();
+		this.state = context.store.getState().InitialData
 	}
 
 	render(){

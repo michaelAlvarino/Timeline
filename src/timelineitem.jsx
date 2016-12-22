@@ -9,7 +9,7 @@ class Item extends React.Component{
 	render(){
 		const divstyle = {
 			"border": "solid grey 2px",
-			"border-radius": "5px",
+			"borderRadius": "5px",
 			"margin": "10px"
 		}
 		return(

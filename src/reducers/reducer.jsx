@@ -1,5 +1,52 @@
+import {combineReducers} from 'redux'
 
-const reducer = function(state = {}, action){
+function TimelineReducer(state={}, action){
+	switch(action.type){
+		case "InvalidateTimeline":
+			return Object.assign({}, state, {
+				didInvalidate: true
+			})
+		case "RequestTimeline":
+			return Object.assign({}, state, {
+				isFetching: true,
+				didInvalidate: false
+			})
+		case "ReceiveTimeline":
+			return Object.assign({}, state, {
+				isFetching: false, 
+				didInvalidate: false,
+				timeline: action.timeline,
+				lastUpdated: action.receivedAt
+			})
+		default:
+			return state
+	}
+}
+
+function ItemReducer(state={}, action){
+	switch(action.type){
+		case "InvalidateItem":
+			return Object.assign({}, state, {
+				didInvalidate: true
+			})
+		case "RequestItem":
+			return Object.assign({}, state, {
+				isFetching: true,
+				didInvalidate: false
+			})
+		case "ReceiveItem":
+			return Object.assign({}, state, {
+				isFetching: false, 
+				didInvalidate: false,
+				item: action.item,
+				lastUpdated: action.receivedAt
+			})
+		default:
+			return state
+	}
+}
+
+function InitialData(state = {}, action){
 	switch(action.type){
 		case "GetInitialData":
 			return Object.assign({}, state, {
@@ -53,4 +100,10 @@ const reducer = function(state = {}, action){
 	}
 }
 
-module.exports = reducer;
+const rootReducer = combineReducers({
+	TimelineReducer, 
+	ItemReducer,
+	InitialData
+})
+
+module.exports = rootReducer
