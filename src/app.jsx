@@ -13,12 +13,17 @@ class App extends React.Component {
         context.store.dispatch(Actions.FetchTimeline(1))
     }
 
+    componentWillReceiveProps(nextProps) {
+        console.log(nextProps);
+        this.props = nextProps;
+    }
+
     render() {
         return (
             <div className="container">
                 <h1 className="row">Welcome to Timeline</h1>
                 <Description/>
-                <Timeline/>
+                <Timeline timeline={this.props.currentState.TimelineReducer}/>
                 <LoginModal/>
                 <Footer/>
             </div>

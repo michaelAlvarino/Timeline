@@ -96,8 +96,8 @@ class User extends model {
 				data: null,
 				errors: []
 			},
-			validPassword = _isPasswordValid(userAttributes.password);
-
+		validPassword = _isPasswordValid(userAttributes.password);
+		console.log(validPassword);
 		if (!validPassword.success) {
 			result.errors.concat(validPassword.errors);
 			result.success = false;
@@ -221,9 +221,9 @@ var _isPasswordValid = (password) => {
 			data: null,
 			status: 200,
 			errors: []
-		},
-		passwordValidations = _getPasswordValidations(password), 
-		key;
+		};
+	var passwordValidations = _getPasswordValidations(password); 
+	var key;
 
 	for (key in passwordValidations) {
 		if (passwordValidations.hasOwnProperty(key) && !passwordValidations[key]) {
