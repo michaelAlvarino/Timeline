@@ -1,10 +1,11 @@
 'use strict';
 /* globals require, module */
 
-const User = require('./../models/User.js');
-const Blacklist = require('./../models/Blacklist.js');
-const AuthHelper = require('../helpers/AuthHelper.js');
-const Utils = require('../helpers/Utils.js');
+const User = require('./../models/User.js')
+const Blacklist = require('./../models/Blacklist.js')
+const AuthHelper = require('../helpers/AuthHelper.js')
+const Utils = require('../helpers/Utils.js')
+const Response = require('../helpers/Response')
 
 module.exports = function(app, redis, redisClient) {
 	app.post('/api/login', (req, res) => {
@@ -12,21 +13,24 @@ module.exports = function(app, redis, redisClient) {
 			password	= req.body.password;
 
 		User.findByCredentials(email, password)
-			.then((token) => {
-				return res.json({
+			.then(user => {
+				let token = AuthHelper.generateJWT(user)
+
+				return res.json(Reponse.custom({
+					status: 200,
 					success: true,
-					data: token,
-					errors: []
-				})
+					data: token
+				}))
 			})
-			.catch((errors) => {
-				return res.status(403).json({
+			.catch(errors => {
+				return res.status(403).json(Response.custom({
+					status: 403,
 					success: false, 
 					data: null,
-					errors: [errors]
-			});
-		});
-	});
+					errors: [ errors ]
+			}))
+		})
+	})
 
 	/*
 		A little tougher to invalidate tokens. Might need a new table where we blacklist specific tokens.
@@ -44,14 +48,14 @@ module.exports = function(app, redis, redisClient) {
 
 	 */
 	app.post('/api/logout', (req, res) => {
-		var token = req.headers.timelinetoken || req.body.timelinetoken,
-			id = req.body.id;
+		let token = req.headers.timelinetoken || req.body.timelinetoken
+		let id = req.body.id
 
 		// need to make sure we're logging out the right user, who is currently logged in
 		if(token && AuthHelper.authenticateUser(token) && !(AuthHelper.isAdmin(token))){
-			var expireInXDays = 10;
-			redisClient.set(token, 1);
-			redisClient.expire(expireInXDays * 24 * 60 * 60);
+			let expireInXDays = 10
+			redisClient.set(token, 1)
+			redisClient.expire(expireInXDays * 24 * 60 * 60)
 		}
-	});
-};
+	})
+}
