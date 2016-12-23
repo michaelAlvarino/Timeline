@@ -27,13 +27,13 @@ module.exports = (app, redis, redisClient) => {
 			.then(user => User.query().insertAndFetch(user))
 			.then(data => {
 				if (data) {
-					return res.json(data);
+					return res.json(data)
 				} else {
 					return res.status(400).json(Response.custom({
 						status: 400,
 						errors: ['User creation failed'],
 						success: false
-					}));
+					}))
 				}
 			})
 			.catch(errors => {
