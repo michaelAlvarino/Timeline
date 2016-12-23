@@ -9,8 +9,8 @@ const Response = require('../helpers/Response')
 
 module.exports = function(app, redis, redisClient) {
 	app.post('/api/login', (req, res) => {
-		var email		= req.body.email,
-			password	= req.body.password;
+		let email = req.body.email
+		let password = req.body.password
 
 		User.findByCredentials(email, password)
 			.then(user => {
