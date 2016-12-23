@@ -1,17 +1,22 @@
 'use strict';
 /* globals module, require */
 
-const jwt			= require('jsonwebtoken');
-const config		= require('../../config');
-const bcrypt		= require('bcrypt');
-const model			= require('objection').Model;
-const AuthHelper	= require('../helpers/AuthHelper');
+const jwt			= require('jsonwebtoken')
+const config		= require('../../config')
+const bcrypt		= require('bcrypt')
+const model			= require('objection').Model
+const AuthHelper	= require('../helpers/AuthHelper')
+const Response		= require('../helpers/Response')
 
-/* start region private variables */
-var emailRegex = new RegExp(/^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i);
-/* end region private variables */
+// Class constants
+const EMAIL_REGEX = /^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i;
+const USER_TYPES  = { user: 'user', mod: 'mod', therock: 'therock', admin: 'admin' }
 
-// ES6 translates this to function User(){}; User.prototype = Object.create(model.prototype);
+// ES6 translates this to the following:
+// function User() {
+// 		// do stuff
+// }; 
+// User.prototype = Object.create(model.prototype);
 
 /**
  * @class User
@@ -37,98 +42,87 @@ class User extends model {
 		};
 	}
 
-	static validateUser(userAttributes) {
-		if(!userAttributes.password || !userAttributes.email || 
-			(userAttributes.email.search(emailRegex) === -1)) { // search takes the regex and returns the location or -1 on failure
-			return false;
+	static validateUser(user, createPassword = true) {
+		let errors = []
+		let email = user.email
+		let password = user.password 
+		let passwordConfirmation = user.passwordConfirmation
+		let userType = user.userType
+
+		// Check email
+		errors = errors.concat(getEmailErrors(email))
+		// Check password but only if creating a new password
+		if (createPassword) {
+			errors = errors.concat(getPasswordErrors(password, passwordConfirmation))
 		}
 
-		var dt = new Date().toISOString();
-		userAttributes.passwordDigest = _createPasswordDigest(userAttributes.password); // We re-hash the passwords on PUTS / PATCH, we only need to do that if the user is deliberately changing their password
-		userAttributes.createdDate = dt;
-		userAttributes.updatedDate = dt;
-		delete userAttributes.password;
+		// Check user type
+		if (!userType || !USER_TYPES.hasOwnProperty(userType)) {
+			user.userType = USER_TYPES.user
+		}
 
-		return userAttributes;
+		if (errors.length === 0) {
+			let now = new Date().toISOString();
+			user.createdDate = now
+			user.updatedDate = now
+
+			// TODO: Determine if creating the passwordDigest should even happen in the 
+			// 			validate step
+			if (createPassword) {
+				user.passwordDigest = createPasswordDigest(password)
+				delete user.password
+			}
+		}
+
+		return Object.assign({errors: errors}, user)
 	}
 
 	static updateUser (user, userAttributes) {
-		var errors = [];
+		// TODO: Allow users to update their password
+		// let updatePassword = !!userAttributes.oldPassword
+		// hasCorrectPassword(userAttributes.oldPassword, user.passwordDigest)
 
-		// Resetting password
-		if (userAttributes.passwordConfirmation && userAttributes.password) {
-			if (!_hasCorrectPassword(userAttributes.passwordConfirmation, user.passwordDigest)) {
-				return {
-					success: false,
-					errors: ["Invalid credentials"],
-					status: 403
-				};
-			}
-			var validPassword = _isPasswordValid(userAttributes.password);
+		let updatedUser = User.validateUser(Object.assign({}, user, userAttributes))
 
-			if (validPassword.success) {
-				user.passwordDigest = validPassword.data;
-			} else {
-				errors.concat(validPassword.errors);
-			}
-		}
+		return uniqueEmail(userAttributes.email)
+			.then(emailIsUnique => {
+				return new Promise((fulfill, reject) => {
+					if (updatedUser.errors.length === 0) {
+						fulfill(updatedUser)
+					} else {
+						reject(updatedUser.errors)
+					}
+				})
+			})
+			.catch(data => {
+				return new Promise ((fulfill, reject) => {
+					updatedUser.errors.push('Email already taken')
 
-		if (errors.length > 0) {
-			return {
-				success: false,
-				status: 400,
-				errors: errors
-			};
-		}
-
-		user.updatedDate = (new Date()).toISOString();
-
-		return {
-			success: true,
-			status: 200,
-			data: user
-		};
+					return reject(updatedUser.errors)
+				})
+			})
 	}
 
-	static createUser (userAttributes) {
-		var result = {
-				success: true,
-				data: null,
-				errors: []
-			},
-		validPassword = _isPasswordValid(userAttributes.password);
-		console.log(validPassword);
-		if (!validPassword.success) {
-			result.errors.concat(validPassword.errors);
-			result.success = false;
-		}
+	static createUser(userAttributes) {
+		let user = User.validateUser(userAttributes)
 
-		if (!userAttributes.userType) {
-			userAttributes.userType = 'user';
-		}
-
-		var dt = new Date().toISOString();
-
-		return _uniqueEmail(userAttributes.email)
-			.then((data) => {
+		return uniqueEmail(userAttributes.email)
+			.then(emailIsUnique => {
 				return new Promise ((fulfill, reject) => {
-					result.data = {
-						email:			userAttributes.email,
-						passwordDigest: validPassword.data,
-						userType:		userAttributes.userType,
-						createdDate:	dt,
-						updatedDate:	dt
-					};
-					return fulfill(result);
-				});
-			}, (data) => {
+					if (user.errors.length === 0) {
+						fulfill(user)
+					} else {
+						reject(user.errors)
+					}
+				})
+			})
+			.catch((data) => {
 				return new Promise ((fulfill, reject) => {
-					result.success = false;
-					result.errors.push('Email already taken');
+					user.errors.push('Email already taken')
 
-					return reject(result);
-				});
-			});
+					return reject(data)
+				})
+			})
 	}
 
 	// should return true false, not a new jwt if it turns out to be false
@@ -138,7 +132,7 @@ class User extends model {
 			.where('email', email)
 			.then((users) => {
 				return new Promise((fulfill, reject) => {
-					if (users.length === 1 && _hasCorrectPassword(password, users[0].passwordDigest)) {
+					if (users.length === 1 && hasCorrectPassword(password, users[0].passwordDigest)) {
 						var token = AuthHelper.generateJWT({
 							id: users[0].id,
 							userType: users[0].userType
@@ -160,10 +154,6 @@ class User extends model {
 				});
 			});
 	}
-
-	static testUniqueEmail (email) {
-		return _uniqueEmail(email);
-	}
 }
 
 /* start region private methods */
@@ -174,7 +164,7 @@ class User extends model {
  * @param  {string}	password
  * @return {string}
  */
-var _createPasswordDigest = (password) => {
+const createPasswordDigest = (password) => {
 	return bcrypt.hashSync(password, bcrypt.genSaltSync());
 };
 
@@ -186,7 +176,7 @@ var _createPasswordDigest = (password) => {
  * @param	{string}	passwordDigest
  * @return	{boolean}
  */
-var _hasCorrectPassword  = (password, passwordDigest) => {
+const hasCorrectPassword = (password, passwordDigest) => {
 	return bcrypt.compareSync(password, passwordDigest);
 };
 
@@ -195,48 +185,94 @@ var _hasCorrectPassword  = (password, passwordDigest) => {
  * 
  * @memberOf User
  * @param	{string}	password
+ * @param	{string}	passwordConfirmation
  * @return	{Object}
  */
-var _getPasswordValidations = (password) => {
+const getPasswordValidations = (password, passwordConfirmation) => {
 	return {
 		'Password required':	
-			password,
+			!!password,
 		'Password must be at least 9 characters long':
-			password && password.length > 8,
+			!!password && (password.length > 8),
 		'Password requires 1 lower case letter, 1 upper letter, and 1 number': 
-			password && password.search(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).+$/) >= 0
-	};
-};
+			!!password && (password.search(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).+$/) >= 0),
+		'Password does not match password confirmation':
+			password === passwordConfirmation
+	}
+}
 
 /**
- * Validates if a password is valid
+ * Returns an object with the keys as requirement descriptions and the values as the validity
  * 
  * @memberOf User
- * @param	{string}	password
+ * @param	{string}	email
  * @return	{Object}
  */
-var _isPasswordValid = (password) => {
-	var result = {
-			success: true,
-			data: null,
-			status: 200,
-			errors: []
-		};
-	var passwordValidations = _getPasswordValidations(password); 
-	var key;
+const getEmailValidations = (email) => {
+	return {
+		'Email required': !!email,
+		'Email is not valid': !!email && (email.search(EMAIL_REGEX) >= 0)
+	}
+}
 
-	for (key in passwordValidations) {
+/**
+ * Returns true if the password is valid
+ * 
+ * @param	{string}	password
+ * @param	{string}	passwordConfirmation
+ * @return	{bool}
+ */
+const isValidPassword = (password, passwordConfirmation) => {
+	let passwordValidations = getPasswordValidations(password, passwordConfirmation)
+
+	for (let key in passwordValidations) {
 		if (passwordValidations.hasOwnProperty(key) && !passwordValidations[key]) {
-			result.success = false;
-			result.status = 400;
-			result.errors.push(key);
+			return false
 		}
 	}
 
-	if (result.success) result.data = _createPasswordDigest(password);
+	return true
+}
 
-	return result;
-};
+/**
+ * Gets errors for a password
+ * 
+ * @memberOf User
+ * @param	{string}	password
+ * @param	{string}	passwordConfirmation
+ * @return	{Array}
+ */
+const getPasswordErrors = (password, passwordConfirmation) => {
+	let errors = []
+	let passwordValidations = getPasswordValidations(password, passwordConfirmation)
+
+	for (let key in passwordValidations) {
+		if (passwordValidations.hasOwnProperty(key) && !passwordValidations[key]) {
+			errors.push(key)
+		}
+	}
+
+	return errors
+}
+
+/**
+ * Gets errors for an email
+ * 
+ * @param  {string} email
+ * @return {Array}
+ */
+const getEmailErrors = (email) => {
+	let errors = []
+	let emailValidations = getEmailValidations(email)
+
+	for (let key in emailValidations) {
+		if (emailValidations.hasOwnProperty(key) && !emailValidations[key]) {
+			errors.push(key)
+		}
+	}
+
+	return errors
+}
 
 /**
  * Returns a Promise that fulfills when an email is unique. Still not used
@@ -245,23 +281,23 @@ var _isPasswordValid = (password) => {
  * @param	{string}	email
  * @return	{Promise}
  */
-var _uniqueEmail = (email) => {
+const uniqueEmail = (email) => {
 	return User.query()
 		.where('email', email)
-		.then((data) => {
+		.then(users => {
 			return new Promise ((fulfill, reject) => {
-				if (data.length > 0) {
+				if (users.length > 0) {
 					return reject(false);
 				} else {
 					return fulfill(true);
 				}
-			}); 
+			})
 		})
 		.catch((err) => {
 			return new Promise((fulfill, reject) => {
 				return reject(err);
-			});
-		});
+			})
+		})
 }
 /* end region private methods */
 
