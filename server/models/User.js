@@ -1,29 +1,28 @@
-'use strict';
 /* globals module, require */
+'use strict'
 
-const jwt			= require('jsonwebtoken')
-const config		= require('../../config')
-const bcrypt		= require('bcrypt')
-const model			= require('objection').Model
+const BCrypt		= require('BCrypt')
+const Model			= require('objection').Model
 const AuthHelper	= require('../helpers/AuthHelper')
 const Response		= require('../helpers/Response')
 
 // Class constants
-const EMAIL_REGEX = /^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i;
+const EMAIL_REGEX = /^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i
 const USER_TYPES  = { user: 'user', mod: 'mod', therock: 'therock', admin: 'admin' }
+const TABLE_NAME  = 'users'
 
 // ES6 translates this to the following:
 // function User() {
 // 		// do stuff
-// }; 
-// User.prototype = Object.create(model.prototype);
+// }
+// User.prototype = Object.create(Model.prototype)
 
 /**
  * @class User
  */
-class User extends model {
+class User extends Model {
 	static get tableName () { 
-		return 'users'; 
+		return TABLE_NAME
 	}
 
 	static get jsonSchema () {
@@ -39,7 +38,7 @@ class User extends model {
 				createdDate: {type: 'string', format: 'date-time'},
 				updatedDate: {type: 'string', format: 'date-time'}
 			}
-		};
+		}
 	}
 
 	static validateUser(user, createPassword = true) {
@@ -62,7 +61,7 @@ class User extends model {
 		}
 
 		if (errors.length === 0) {
-			let now = new Date().toISOString();
+			let now = new Date().toISOString()
 			user.createdDate = now
 			user.updatedDate = now
 
@@ -84,21 +83,19 @@ class User extends model {
 
 		let updatedUser = User.validateUser(Object.assign({}, user, userAttributes))
 
-		return uniqueEmail(userAttributes.email)
-			.then(emailIsUnique => {
+		return uniqueEmail(updatedUser)
+			.then(user => {
 				return new Promise((fulfill, reject) => {
-					if (updatedUser.errors.length === 0) {
-						fulfill(updatedUser)
+					if (user.errors.length === 0) {
+						fulfill(user)
 					} else {
-						reject(updatedUser.errors)
+						reject(user.errors)
 					}
 				})
 			})
-			.catch(data => {
+			.catch(err => {
 				return new Promise ((fulfill, reject) => {
-					updatedUser.errors.push('Email already taken')
-
-					return reject(updatedUser.errors)
+					return reject(err)
 				})
 			})
 	}
@@ -106,8 +103,8 @@ class User extends model {
 	static createUser(userAttributes) {
 		let user = User.validateUser(userAttributes)
 
-		return uniqueEmail(userAttributes.email)
-			.then(emailIsUnique => {
+		return uniqueEmail(user)
+			.then(user => {
 				return new Promise ((fulfill, reject) => {
 					if (user.errors.length === 0) {
 						fulfill(user)
@@ -116,43 +113,42 @@ class User extends model {
 					}
 				})
 			})
-			.catch((data) => {
+			.catch((err) => {
 				return new Promise ((fulfill, reject) => {
-					user.errors.push('Email already taken')
-
-					return reject(data)
+					return reject(err)
 				})
 			})
 	}
 
-	// should return true false, not a new jwt if it turns out to be false
-	// still return a promise with true or false
+	/**
+	 * Finds users by their credentials
+	 * 
+	 * @param  {String} email
+	 * @param  {String} password
+	 * @return {User}
+	 */
 	static findByCredentials (email, password) {
 		return User.query()
 			.where('email', email)
-			.then((users) => {
+			.then(users => {
 				return new Promise((fulfill, reject) => {
-					if (users.length === 1 && hasCorrectPassword(password, users[0].passwordDigest)) {
-						var token = AuthHelper.generateJWT({
-							id: users[0].id,
-							userType: users[0].userType
-						});
+					let user = users[0]
 
-						fulfill(token);
+					if (users.length === 1 && hasCorrectPassword(password, user.passwordDigest)) {
+						fulfill(user)
+
+					// Should never be a case with more than one user with the exact
+					// same credentials due to the unique email constriant, but still
 					} else {
-						reject({
-							status: 403,
-							success: false,
-							errors: [ 'Invalid credentials' ]
-						});
+						reject(null)
 					}
-				});
+				})
 			})
-			.catch((errors) => {
+			.catch(err => {
 				return new Promise((fulfill, reject) => {
-					reject(errors);
-				});
-			});
+					reject(err)
+				})
+			})
 	}
 }
 
@@ -165,8 +161,8 @@ class User extends model {
  * @return {string}
  */
 const createPasswordDigest = (password) => {
-	return bcrypt.hashSync(password, bcrypt.genSaltSync());
-};
+	return BCrypt.hashSync(password, BCrypt.genSaltSync())
+}
 
 /**
  * Returns true if a password matches a given BCrypt hashed password digest
@@ -177,8 +173,8 @@ const createPasswordDigest = (password) => {
  * @return	{boolean}
  */
 const hasCorrectPassword = (password, passwordDigest) => {
-	return bcrypt.compareSync(password, passwordDigest);
-};
+	return BCrypt.compareSync(password, passwordDigest)
+}
 
 /**
  * Returns an object with the keys as requirement descriptions and the values as the validity
@@ -278,27 +274,35 @@ const getEmailErrors = (email) => {
  * Returns a Promise that fulfills when an email is unique. Still not used
  * 
  * @memberOf User
- * @param	{string}	email
+ * @param	{Object}	user
  * @return	{Promise}
  */
-const uniqueEmail = (email) => {
+const uniqueEmail = (user) => {
+	if (typeof user.email !== 'string') {
+		throw Error('Invalid user')
+	}
+
+	let email = user.email
+
 	return User.query()
 		.where('email', email)
 		.then(users => {
 			return new Promise ((fulfill, reject) => {
 				if (users.length > 0) {
-					return reject(false);
+					user.errors.push('Email already taken')
+
+					return reject(user)
 				} else {
-					return fulfill(true);
+					return fulfill(user)
 				}
 			})
 		})
 		.catch((err) => {
 			return new Promise((fulfill, reject) => {
-				return reject(err);
+				return reject(err)
 			})
 		})
 }
 /* end region private methods */
 
-module.exports = User;
+module.exports = User
