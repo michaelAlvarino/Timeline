@@ -29,7 +29,11 @@ module.exports = (app, redis, redisClient) => {
 				if (data) {
 					return res.json(data);
 				} else {
-					return res.status(400).json('User creation failed');
+					return res.status(400).json(Response.custom({
+						status: 400,
+						errors: ['User creation failed'],
+						success: false
+					}));
 				}
 			})
 			.catch(errors => {
