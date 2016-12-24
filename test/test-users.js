@@ -10,12 +10,13 @@ const server = require('../server/server');
 const knex = server.knex;
 
 const validUser = {
-        password: 'passwordPASSWORD1234567890',
-        passwordConfirmation: 'passwordPASSWORD1234567890',
-        email: 'email@example.com',
-        userType: 'user'
-    }
-    // TODO: Need to find a way to test the private methods in User.js
+    password: 'passwordPASSWORD1234567890',
+    passwordConfirmation: 'passwordPASSWORD1234567890',
+    email: 'email@example.com',
+    userType: 'user'
+}
+
+// TODO: Test the 'private' methods in User.js
 describe('User', () => {
     beforeEach(done => {
         knex.migrate.rollback()
