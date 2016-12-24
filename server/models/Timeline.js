@@ -27,4 +27,16 @@ class Timeline extends Model {
 	}
 }
 
+Timeline.relationMappings = {
+	timelineItems: {
+		relation: Model.HasManyRelation,
+		modelClass: __dirname + '/TimelineItem',
+		join: {
+			from: 'timelines.id',
+			to: 'timelineItems.timelineId'
+		}
+	}
+}
+
+
 module.exports = Timeline;

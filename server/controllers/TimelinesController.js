@@ -1,11 +1,25 @@
 'use strict';
 /* globals module, require */
 
-const Timeline 		= require('./../models/Timeline.js');
-const AuthHelper 	= require('../helpers/AuthHelper.js');
-const Utils 		= require('../helpers/Utils.js');
+const Timeline 		= require('./../models/Timeline.js')
+const AuthHelper 	= require('../helpers/AuthHelper.js')
+const Utils 		= require('../helpers/Utils.js')
 
 module.exports = function(app){
+	app.get('/api/timelines', (req, res) => {
+		let query = Timeline.query()
+			.eager('timelineItems')
+			.select('*')
+			// FIXME: This is not quite right... we need to build an association so that 
+			// we get timelineItems as an array
+			.leftJoin('timelineItems','timelineItems.timelineId', 'timelines.id')
+
+		query.then(data => res.json({
+			success: true,
+			errors: [],
+			data: data
+		}))
+	})
 
 
 	/**
