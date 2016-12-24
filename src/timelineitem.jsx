@@ -6,12 +6,13 @@ class Item extends React.Component{
 		super(props)
 	}
 
-	render(){
+	render() {
 		const divstyle = {
 			"border": "solid grey 2px",
 			"borderRadius": "5px",
 			"margin": "10px"
 		}
+
 		return(
 			<div className="col-md-4" style={divstyle}>
 				<h2>{this.props.title}</h2>

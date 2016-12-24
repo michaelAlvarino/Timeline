@@ -1,16 +1,17 @@
 import React from 'react'
 
-class Description extends React.Component{
+class Description extends React.Component {
 	constructor(props){
 		super(props);
 	}
 
 	render(){
-		return(
-			<div className="row">
-				<p>Welcome to Timeline, where you can create, update, and provide sources for local histories.</p>
+		return <div className="row">
+				<p>
+					Welcome to Timeline, where you can create, update, and provide 
+					sources for local histories.
+				</p>
 			</div>
-		);
 	}
 }
 
