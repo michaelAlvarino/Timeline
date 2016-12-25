@@ -1,8 +1,9 @@
-'use strict';
 /* globals module, require */
+'use strict'
 
-const User			= require('./../models/User');
-const AuthHelper	= require('./../helpers/AuthHelper');
+const User			= require('./../models/User')
+const AuthHelper	= require('./../helpers/AuthHelper')
+const Response		= require('./../helpers/Response')
 
 module.exports = (app, redis, redisClient) => {
 	app.get('/api/users/:id(\\d+)', (req, res) => {
@@ -22,21 +23,27 @@ module.exports = (app, redis, redisClient) => {
 	});
 
 	app.post('/api/users/create', (req,res) => {
-		var user = User.createUser(req.body)
-			.then((user) => {
-				return User.query().insertAndFetch(user.data);
-			})
-			.then((data) => {
+		User.createUser(req.body)
+			.then(user => User.query().insertAndFetch(user))
+			.then(data => {
 				if (data) {
-					return res.json(data);
+					return res.json(data)
 				} else {
-					return res.status(400).json('User creation failed');
+					return res.status(400).json(Response.custom({
+						status: 400,
+						errors: ['User creation failed'],
+						success: false
+					}))
 				}
 			})
-			.catch((error) => {
-				return res.status(400).json(error);
-			});
-	});
+			.catch(errors => {
+				return res.status(400).json(Response.custom({
+					status: 400,
+					errors: errors,
+					success: false
+				}))
+			})
+	})
 
 	app.delete('/api/users/:id(\\d+)', (req, res) => {
 		var token = req.body.timelinetoken || req.header.timelinetoken,

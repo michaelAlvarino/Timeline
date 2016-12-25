@@ -5,6 +5,7 @@
   "main": "server/server.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha --reporter spec",
+    "test-single": "./node_modules/.bin/mocha ",
     "build": "./node_modules/.bin/webpack --config webpack.production.config.js",
     "start": "webpack-dev-server --progress --profile --colors",
     "serve": "node ./server/server.js"

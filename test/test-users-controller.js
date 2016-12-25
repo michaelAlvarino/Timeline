@@ -40,6 +40,7 @@ describe('UsersController', () => {
 				.send({
 					email :'ron.weasley@hogwarts.edu',
 					password: 'passwordPASSWORD123',
+					passwordConfirmation: 'passwordPASSWORD123',
 					userType: 'user'
 				})
 				.end((err, res) => {
