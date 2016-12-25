@@ -6,26 +6,22 @@ import {createStore, applyMiddleware} from 'redux'
 import rootReducer from './reducers/reducer.jsx'
 import thunkMiddleware from 'redux-thunk'
 
-let store = createStore(rootReducer,
+let store = createStore(
+	rootReducer,
 	applyMiddleware(thunkMiddleware)
 )
 
-const timelineRenderer = () => {
-	let currentState = store.getState();
-
+const render = () => {
 	ReactDOM.render(
 		<Provider store={store}>
-			<App currentState={currentState}/>
+			<App />
 		</Provider>,
 		document.getElementById('app')
 	)
 }
 
-store.subscribe((() => {
-	timelineRenderer()
-
-	return timelineRenderer
-})())
+store.subscribe(render)
+render()
 
 /*
 What i'm thinking the store should look like...

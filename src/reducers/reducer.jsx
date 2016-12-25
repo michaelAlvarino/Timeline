@@ -1,36 +1,48 @@
 import {combineReducers} from 'redux'
+import TimelineReducer from './TimelineReducer'
+// function TimelineReducer(state={}, action){
+// 	switch(action.type){
+// 		case "RequestTimelines":
+// 			return Object.assign({}, state, {
+// 				isFetching: true,
+// 				didInvalidate: false
+// 			})
+// 		case "ReceiveTimelines":
+// 			return Object.assign({}, state, {
+// 				isFetching: false,
+// 				didInvalidate: false,
+// 				timelines: action.payload
+// 			})
 
-function TimelineReducer(state={}, action){
-	switch(action.type){
-		case "InvalidateTimeline":
-			return Object.assign({}, state, {
-				didInvalidate: true
-			})
-		case "RequestTimeline":
-			return Object.assign({}, state, {
-				isFetching: true,
-				didInvalidate: false
-			})
-		case "ReceiveTimeline":
+// 		case "InvalidateTimeline":
+// 			return Object.assign({}, state, {
+// 				didInvalidate: true
+// 			})
+// 		case "RequestTimeline":
+// 			return Object.assign({}, state, {
+// 				isFetching: true,
+// 				didInvalidate: false
+// 			})
+// 		case "ReceiveTimeline":
 
-/*{
-			type: "ReceiveTimeline",
-			name: json.name,
-			timeline: json,
-			receivedAt: Date.now()
-		}*/
-			var x = Object.assign({}, state, {
-				isFetching: false, 
-				didInvalidate: false,
-				timeline: action.timeline,
-				lastUpdated: action.receivedAt
-			})
-			console.log(x)
-			return x
-		default:
-			return state
-	}
-}
+// /*{
+// 			type: "ReceiveTimeline",
+// 			name: json.name,
+// 			timeline: json,
+// 			receivedAt: Date.now()
+// 		}*/
+// 			var x = Object.assign({}, state, {
+// 				isFetching: false, 
+// 				didInvalidate: false,
+// 				timeline: action.timeline,
+// 				lastUpdated: action.receivedAt
+// 			})
+// 			console.log(x)
+// 			return x
+// 		default:
+// 			return state
+// 	}
+// }
 
 function ItemReducer(state={}, action){
 	switch(action.type){

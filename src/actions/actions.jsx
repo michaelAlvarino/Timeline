@@ -1,6 +1,36 @@
-var request = require('reqwest')
+const request = require('reqwest')
+const TimelineConstants = require('../constants/TimelineConstants')
 
 const Actions = { 
+	RequestTimelines: function () {
+		return {
+			type: 'RequestTimelines'
+		}
+	},
+
+	ReceiveTimelines: function (timelines) {
+		return {
+			type: 'ReceiveTimelines',
+			payload: timelines
+		}
+	},
+
+	FetchTimelines: function FetchTimelines() {
+		// returns a function
+		return (dispatch) => {
+
+			// dispatches our requesttimeline action
+			dispatch(Actions.RequestTimelines())
+
+			return request({
+				url: 'api/timelines',
+				method: 'GET'
+			}).then(response => {
+				dispatch(Actions.ReceiveTimelines(response.data))
+			})
+		}
+	},
+
 	GetInitialData: function() {
 		return { 
 			type: "GetInitialData"
@@ -69,7 +99,7 @@ const Actions = {
 		}
 	},
 	ReceiveItems: function(timelineId, json){
-		return{
+		return {
 			type: "ReceiveItems",
 			timelineId,
 			items: json.data.children.map(child => child.data),
