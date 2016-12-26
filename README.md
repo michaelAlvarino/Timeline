@@ -11,10 +11,10 @@ node server/server.js   # start backend server (optionally, use nodemon)
 
 ## Response Format
 
-```json
+```
 {  
-    "success": <true/false>,  
-    "data": <response data>,  
-    "errors": [<array of errors>]  
+    "success": Boolean,  
+    "data": Any,  
+    "errors": Array  
 }
 ```
